@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <array>
 #include <cctype>
 #include <functional>
 #include <string_view>
@@ -73,5 +74,33 @@ struct AlignedSentencePair {
         });
   }
 };
+
+inline auto fields(std::string_view line) {
+  std::array<std::string_view, 3> result;
+  auto tabPos = line.find('\t');
+  if (tabPos == std::string_view::npos) {
+    throw std::invalid_argument("not enough fields");
+  }
+  result[0] = line.substr(0, tabPos);
+  auto start = tabPos + 1;
+  tabPos = line.find('\t', start);
+  if (tabPos == std::string_view::npos) {
+    throw std::invalid_argument("not enough fields");
+  }
+  result[1] = line.substr(start, tabPos - start);
+  result[2] = line.substr(tabPos + 1);
+  return result;
+}
+
+template<bool SourceIsParsed, bool TargetIsParsed>
+AlignedSentencePair readAlignedSentencePair(std::string_view line) {
+  auto fs = fields(line);
+  static_assert(std::tuple_size<decltype(fs)>::value == 3);
+  return {
+    tokens<SourceIsParsed>(fs[0]),
+    tokens<TargetIsParsed>(fs[1]),
+    readAlignment(fs[2])
+  };
+}
 
 }

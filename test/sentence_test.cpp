@@ -59,4 +59,12 @@ TEST(SentenceTests, InconsistentAlignedSentencePair) {
   EXPECT_THROW(AlignedSentencePair(s, s, a), std::out_of_range);
 }
 
+TEST(SentenceTests, ReadAlignedSentencePair) {
+  std::string_view line = "foo bar baz\tqux\t0-0 1-0 2-0";
+  auto pair = readAlignedSentencePair<false, false>(line);
+  ASSERT_EQ(3, pair.src.size());
+  ASSERT_EQ(1, pair.tgt.size());
+  ASSERT_EQ(3, pair.alignment.size());
+}
+
 }
