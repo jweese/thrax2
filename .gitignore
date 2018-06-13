@@ -2,5 +2,9 @@
 *.a
 CMakeCache.txt
 CMakeFiles
+CTestTestfile.cmake
+DartConfiguration.tcl
 Makefile
+Testing
 cmake_install.cmake
+all_tests*
