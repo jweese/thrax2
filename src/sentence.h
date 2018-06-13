@@ -6,6 +6,8 @@
 #include <string_view>
 #include <vector>
 
+#include "alignment.h"
+
 namespace jhu::thrax {
 
 using Sentence = std::vector<std::string_view>;
@@ -46,5 +48,30 @@ Sentence tokens(std::string_view line) {
   }
   return sentence;
 }
+
+struct AlignedSentencePair {
+  const Sentence src, tgt;
+  const Alignment alignment;
+
+  AlignedSentencePair(Sentence s, Sentence t, Alignment a)
+      : src(std::move(s)), tgt(std::move(t)), alignment(std::move(a)) {
+    if (!consistent()) {
+      throw std::out_of_range("inconsistent aligned sentence pair");
+    }
+  }
+
+ private:
+  bool consistent() const {
+    return std::all_of(
+        alignment.begin(),
+        alignment.end(),
+        [this](auto p) {
+          return p.src >= 0
+              && p.tgt >= 0
+              && p.src < src.size()
+              && p.tgt < tgt.size();
+        });
+  }
+};
 
 }

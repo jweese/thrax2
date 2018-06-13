@@ -52,4 +52,11 @@ TEST(SentenceTests, LargerParse) {
   EXPECT_EQ("blah", s[1]);
 }
 
+TEST(SentenceTests, InconsistentAlignedSentencePair) {
+  std::string_view line = "foo bar baz";
+  auto s = tokens<false>(line);
+  auto a = readAlignment("0-0 1-3");
+  EXPECT_THROW(AlignedSentencePair(s, s, a), std::out_of_range);
+}
+
 }
