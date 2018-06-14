@@ -145,6 +145,7 @@ inline std::ostream& operator<<(std::ostream& out, LabeledRuleView v) {
   return out;
 }
 
-std::vector<PhrasalRule> extract(const AlignedSentencePair&);
+std::vector<PhrasalRule> extract(
+    const AlignedSentencePair& sentence, int initialPhraseSize);
 
 }
