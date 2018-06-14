@@ -38,4 +38,14 @@ TEST(LabelTests, PrintHieroUnary) {
   EXPECT_EQ("[X] ||| [X,1] ||| [X,1]", s.str());
 }
 
+TEST(LabelTests, PrintHieroReorder) {
+  auto asp = readAlignedSentencePair<false, false>("a c\tb d\t0-0");
+  std::ostringstream s;
+  PhrasalRule rule{asp};
+  rule.nts[0] = {{0, 1}, {1, 2}};
+  rule.nts[1] = {{1, 2}, {0, 1}};
+  s << LabeledRuleView{ rule, HieroLabeler{} };
+  EXPECT_EQ("[X] ||| [X,1] [X,2] ||| [X,2] [X,1]", s.str());
+}
+
 }

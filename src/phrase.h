@@ -29,6 +29,10 @@ struct Span {
     std::iota(result.begin(), result.end(), start);
     return result;
   }
+
+  bool operator==(Span s) const {
+    return start == s.start && end == s.end;
+  }
 };
 
 inline void removeIndices(Indices& from, Span s) {
@@ -59,6 +63,10 @@ struct SpanPair {
     } else {
       return tgt;
     }
+  }
+
+  bool operator==(SpanPair sp) const {
+    return src == sp.src && tgt == sp.tgt;
   }
 };
 

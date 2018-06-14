@@ -42,6 +42,15 @@ struct PhrasalRule {
     }
     return result;
   }
+
+  auto ntsInSourceOrder() const {
+    Rhs result(nts);
+    std::sort(
+        result.begin(),
+        result.end(),
+        [](auto a, auto b) { return a.src.start < b.src.start; });
+    return result;
+  }
 };
 
 struct LabeledRuleView {
@@ -62,19 +71,22 @@ template<bool SourceSide>
 inline void printRhs(std::ostream& out, LabeledRuleView v) {
   const auto& [rule, labeler] = v;
   const auto& s = rule.sentence;
+  constexpr auto empty = [](auto nt) { return nt.empty(); };
   auto nts = rule.nts;
+  auto sourceOrder = rule.ntsInSourceOrder();
+  std::remove_if(sourceOrder.begin(), sourceOrder.end(), empty);
+  auto it = std::remove_if(nts.begin(), nts.end(), empty);
   std::sort(
       nts.begin(),
-      nts.end(),
+      it,
       [](auto a, auto b) {
         return a.template get<SourceSide>().start
              < b.template get<SourceSide>().start;
       });
   auto nt = nts.begin();
-  int ntIndex = 1;
   for (auto i : rule.lhs.get<SourceSide>().indices()) {
     out << ' ';
-    if (nt == nts.end()
+    if (nt == it
         || nt->empty()
         || i < nt->template get<SourceSide>().start) {
       if constexpr (SourceSide) {
@@ -84,8 +96,9 @@ inline void printRhs(std::ostream& out, LabeledRuleView v) {
       }
     } else {
       // next NT
-      bracket(out, labeler(s, *nt), ntIndex);
-      ntIndex++;
+      auto iter = std::find(sourceOrder.begin(), sourceOrder.end(), *nt);
+      auto idx = static_cast<int>(1 + std::distance(sourceOrder.begin(), iter));
+      bracket(out, labeler(s, *nt), idx);
       nt++;
     }
   }
