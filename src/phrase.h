@@ -21,7 +21,7 @@ struct Span {
   }
 
   auto empty() const {
-    return start == end;
+    return start >= end;
   }
 
   auto indices() const {

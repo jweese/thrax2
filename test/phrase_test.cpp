@@ -107,4 +107,10 @@ TEST(PhraseTests, RemoveIndices) {
   EXPECT_EQ(2, is.back());
 }
 
+TEST(PhraseTests, AllPairs) {
+  auto a = readAlignment("0-0 2-1 2-2 2-3");
+  auto ps = minimalConsistentPairs(a, 10);
+  ASSERT_EQ(3, ps.size());
+}
+
 }

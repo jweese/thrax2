@@ -36,10 +36,13 @@ std::vector<SpanPair> minimalConsistentPairs(const Alignment& a, int maxSize) {
   for (auto startPoint : a) {
     for (auto endPoint : a) {
       Span src{ startPoint.src, static_cast<IndexType>(endPoint.src + 1) };
-      auto sz = src.size();
-      if (sz == 0) {
+      if (src.empty()) {
         continue;
-      } else if (sz > maxSize) {
+      } else if (auto it = std::find_if(
+          result.begin(), result.end(), [src](auto p) { return src == p.src; });
+          it != result.end()) {
+        continue;
+      } else if (src.size() > maxSize) {
         break;
       }
       if (auto tgt = minimalTargetSpan(a, src); tgt.has_value()) {
