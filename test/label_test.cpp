@@ -48,4 +48,23 @@ TEST(LabelTests, PrintHieroReorder) {
   EXPECT_EQ("[X] ||| [X,1] [X,2] ||| [X,2] [X,1]", s.str());
 }
 
+TEST(LabelTests, PrintHieroMixed) {
+  auto asp = readAlignedSentencePair<false, false>("a c\tb d\t0-0");
+  std::ostringstream s;
+  PhrasalRule rule{asp};
+  rule.nts[0] = {{0, 1}, {1, 2}};
+  s << LabeledRuleView{ rule, HieroLabeler{} };
+  EXPECT_EQ("[X] ||| [X,1] c ||| b [X,1]", s.str());
+}
+
+TEST(LabelTests, PrintHieroMixed2) {
+  auto asp = readAlignedSentencePair<false, false>("a c\tb d e\t0-0");
+  std::ostringstream s;
+  PhrasalRule rule{asp};
+  rule.nts[0] = {{0, 1}, {0, 1}};
+  rule.nts[1] = {{1, 2}, {2, 3}};
+  s << LabeledRuleView{ rule, HieroLabeler{} };
+  EXPECT_EQ("[X] ||| [X,1] [X,2] ||| [X,1] d [X,2]", s.str());
+}
+
 }
