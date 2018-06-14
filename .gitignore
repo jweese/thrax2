@@ -8,3 +8,4 @@ Makefile
 Testing
 cmake_install.cmake
 all_tests*
+hiero_console
