@@ -23,6 +23,7 @@ Alignment readAlignment(std::string_view sv) {
     }
     s = e;
   }
+  std::sort(result.begin(), result.end(), bySource);
   return result;
 }
 

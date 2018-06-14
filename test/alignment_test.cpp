@@ -73,4 +73,14 @@ TEST(AlignmentTests, NoSource) {
   EXPECT_THROW(readAlignment("-3"), std::invalid_argument);
 }
 
+TEST(AlignmentTests, Sort) {
+  auto a = readAlignment("3-2 0-0");
+  ASSERT_EQ(2, a.size());
+  EXPECT_EQ(0, a.front().src);
+  EXPECT_EQ(0, a.front().tgt);
+  EXPECT_EQ(3, a.back().src);
+  EXPECT_EQ(2, a.back().tgt);
+
+}
+
 }
