@@ -13,12 +13,29 @@ TEST(LabelTests, Hiero) {
   ASSERT_EQ("X", hl(asp, sp));
 }
 
-TEST(LabelTests, PrintHiero) {
+TEST(LabelTests, PrintHieroLexical) {
   auto asp = readAlignedSentencePair<false, false>("a\tb\t0-0");
   PhrasalRule rule{asp};
   std::ostringstream s;
   s << LabeledRuleView{ rule, HieroLabeler{} };
   EXPECT_EQ("[X] ||| a ||| b", s.str());
+}
+
+TEST(LabelTests, PrintHieroLexicalMulti) {
+  auto asp = readAlignedSentencePair<false, false>("a\tb c d\t0-0");
+  std::ostringstream s;
+  PhrasalRule rule{asp};
+  s << LabeledRuleView{ rule, HieroLabeler{} };
+  EXPECT_EQ("[X] ||| a ||| b c d", s.str());
+}
+
+TEST(LabelTests, PrintHieroUnary) {
+  auto asp = readAlignedSentencePair<false, false>("a\tb\t0-0");
+  std::ostringstream s;
+  PhrasalRule rule{asp};
+  rule.nts.front() = asp.span();
+  s << LabeledRuleView{ rule, HieroLabeler{} };
+  EXPECT_EQ("[X] ||| [X,1] ||| [X,1]", s.str());
 }
 
 }
