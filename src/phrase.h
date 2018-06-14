@@ -1,5 +1,6 @@
 #pragma once
 
+#include <numeric>
 #include <optional>
 #include <vector>
 
@@ -19,6 +20,12 @@ struct Span {
 
   auto empty() const {
     return start == end;
+  }
+
+  auto indices() const {
+    std::vector<IndexType> result(size());
+    std::iota(result.begin(), result.end(), start);
+    return result;
   }
 };
 

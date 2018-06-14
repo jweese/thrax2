@@ -89,4 +89,13 @@ TEST(PhraseTests, HasValue) {
   EXPECT_FALSE(s.empty());
 }
 
+TEST(PhraseTests, SpanIndices) {
+  Span s{0, 3};
+  auto is = s.indices();
+  ASSERT_EQ(3, is.size());
+  for (int i = 0; i < is.size(); i++) {
+    EXPECT_EQ(s.start + i, is[i]);
+  }
+}
+
 }
