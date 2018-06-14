@@ -100,6 +100,7 @@ inline std::ostream& operator<<(std::ostream& out, LabeledRuleView v) {
   printRhs<true>(out, v);
   out << kSep;
   printRhs<false>(out, v);
+  return out;
 }
 
 }
