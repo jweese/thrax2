@@ -18,5 +18,6 @@ struct SpanPair {
 };
 
 std::optional<Span> minimalTargetSpan(const Alignment& a, Span src);
+bool isConsistent(const Alignment& a, SpanPair sp);
 
 }
