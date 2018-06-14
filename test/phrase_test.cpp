@@ -69,4 +69,15 @@ TEST(PhraseTests, AllConsistentPairsSizeTwo) {
   EXPECT_EQ(3, sps.size());
 }
 
+TEST(PhraseTests, Disjoint) {
+  EXPECT_TRUE(disjoint({0, 0}, {0, 1}));
+  EXPECT_TRUE(disjoint({0, 0}, {1, 1}));
+  EXPECT_TRUE(disjoint({0, 1}, {1, 2}));
+  EXPECT_TRUE(disjoint({0, 1}, {1, 1}));
+  EXPECT_TRUE(disjoint({1, 1}, {0, 1}));
+  EXPECT_FALSE(disjoint({0, 1}, {0, 2}));
+  EXPECT_FALSE(disjoint({0, 4}, {1, 2}));
+  EXPECT_FALSE(disjoint({3, 4}, {0, 4}));
+}
+
 }

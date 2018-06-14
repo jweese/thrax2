@@ -22,6 +22,13 @@ struct Span {
   }
 };
 
+constexpr bool disjoint(Span a, Span b) {
+  if (b.start < a.start) {
+    std::swap(a, b);
+  }
+  return b.start >= a.end;
+}
+
 struct SpanPair {
   Span src, tgt;
 
