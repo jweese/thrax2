@@ -19,14 +19,14 @@ std::optional<Span> minimalTargetSpan(const Alignment& a, Span src) {
 }
 
 bool isConsistent(const Alignment& a, SpanPair sp) {
-  constexpr auto contains = [](Point p, Span s) {
-    return p.src >= s.start && p.tgt < s.end;
+  constexpr auto contains = [](IndexType p, Span s) {
+    return p >= s.start && p < s.end;
   };
   return std::none_of(
       a.begin(),
       a.end(),
       [contains,sp](Point p) {
-        return contains(p, sp.src) ^ contains(p, sp.tgt);
+        return contains(p.src, sp.src) ^ contains(p.tgt, sp.tgt);
       });
 }
 
