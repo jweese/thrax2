@@ -16,10 +16,18 @@ struct Span {
   auto size() const {
     return std::max(end - start, 0);
   }
+
+  auto has_value() const {
+    return start != end;
+  }
 };
 
 struct SpanPair {
   Span src, tgt;
+
+  auto has_value() const {
+    return src.has_value() && tgt.has_value();
+  }
 };
 
 std::optional<Span> minimalTargetSpan(const Alignment& a, Span src);
