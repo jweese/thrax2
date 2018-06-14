@@ -95,13 +95,12 @@ inline void printRhs(std::ostream& out, LabeledRuleView v) {
   auto sourceOrder = rule.ntsInSourceOrder();
   std::remove_if(sourceOrder.begin(), sourceOrder.end(), empty);
   auto it = std::remove_if(nts.begin(), nts.end(), empty);
-  std::sort(
-      nts.begin(),
-      it,
-      [](auto a, auto b) {
-        return a.template get<SourceSide>().start
-             < b.template get<SourceSide>().start;
-      });
+  if constexpr (!SourceSide) {
+    std::sort(
+        nts.begin(),
+        it,
+        [](auto a, auto b) { return a.tgt.start < b.tgt.start; });
+  }
   auto nt = nts.begin();
   auto indices = rule.lhs.get<SourceSide>().indices();
   for (size_t i = 0; i < indices.size(); i++) {
