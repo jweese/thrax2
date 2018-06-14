@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <iostream>
 #include <numeric>
 #include <optional>
 #include <vector>
@@ -80,6 +81,14 @@ struct SpanPair {
 
 constexpr bool disjoint(SpanPair a, SpanPair b) {
   return disjoint(a.src, b.src) && disjoint(a.tgt, b.tgt);
+}
+
+inline std::ostream& operator<<(std::ostream& out, Span s) {
+  return out << '[' << s.start << ',' << s.end << ')';
+}
+
+inline std::ostream& operator<<(std::ostream& out, SpanPair sp) {
+  return out << sp.src << '+' << sp.tgt;
 }
 
 std::optional<Span> minimalTargetSpan(const Alignment& a, Span src);

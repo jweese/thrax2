@@ -46,12 +46,8 @@ struct PhrasalRule {
   }
 
   auto ntsInSourceOrder() const {
-    Rhs result(nts);
-    std::sort(
-        result.begin(),
-        result.end(),
-        [](auto a, auto b) { return a.src.start < b.src.start; });
-    return result;
+    // We happen to know that NTs are added in source order.
+    return nts;
   }
 
   Alignment alignment() const {
