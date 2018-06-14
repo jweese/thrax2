@@ -106,15 +106,19 @@ inline void printRhs(std::ostream& out, LabeledRuleView v) {
              < b.template get<SourceSide>().start;
       });
   auto nt = nts.begin();
-  for (auto i : rule.lhs.get<SourceSide>().indices()) {
-    out << ' ';
+  auto indices = rule.lhs.get<SourceSide>().indices();
+  for (size_t i = 0; i < indices.size(); i++) {
+    if (i > 0) {
+      out << ' ';
+    }
+    auto index = indices[i];
     if (nt == it
         || nt->empty()
         || i < nt->template get<SourceSide>().start) {
       if constexpr (SourceSide) {
-        out << s.src[i];
+        out << s.src[index];
       } else {
-        out << s.tgt[i];
+        out << s.tgt[index];
       }
     } else {
       // next NT
@@ -129,12 +133,14 @@ inline void printRhs(std::ostream& out, LabeledRuleView v) {
 inline std::ostream& operator<<(std::ostream& out, LabeledRuleView v) {
   const auto& [rule, labeler] = v;
   const auto& s = rule.sentence;
-  const static std::string_view kSep = " |||";
+  const static std::string_view kSep = "\t";
   bracket(out, labeler(s, rule.lhs), kLhsIndex);
   out << kSep;
   printRhs<true>(out, v);
   out << kSep;
   printRhs<false>(out, v);
+  out << kSep;
+  printAlignment(out, rule.alignment());
   return out;
 }
 

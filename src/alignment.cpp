@@ -27,4 +27,13 @@ Alignment readAlignment(std::string_view sv) {
   return result;
 }
 
+void printAlignment(std::ostream& out, const Alignment& alignment) {
+  for (size_t i = 0; i < alignment.size(); i++) {
+    if (i > 0) {
+      out << ' ';
+    }
+    out << alignment[i];
+  }
+}
+
 }
