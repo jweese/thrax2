@@ -35,9 +35,9 @@ TEST(PhraseTests, EmptyConsistent) {
 
 TEST(PhraseTests, SmallConsistent) {
   auto a = readAlignment("0-0 1-1");
-  SpanPair sp1{{0, 0}, {0, 0}};
-  SpanPair sp2{{1, 1}, {1, 1}};
-  SpanPair sp3{{0, 1}, {0, 1}};
+  SpanPair sp1{{0, 1}, {0, 1}};
+  SpanPair sp2{{1, 2}, {1, 2}};
+  SpanPair sp3{{0, 2}, {0, 2}};
   EXPECT_TRUE(isConsistent(a, sp1));
   EXPECT_TRUE(isConsistent(a, sp2));
   EXPECT_TRUE(isConsistent(a, sp3));
@@ -45,8 +45,28 @@ TEST(PhraseTests, SmallConsistent) {
 
 TEST(PhraseTests, Inconsistent) {
   auto a = readAlignment("0-0 1-2 2-1");
-  SpanPair sp{{0, 0}, {0, 2}};
+  SpanPair sp{{0, 1}, {0, 3}};
   EXPECT_FALSE(isConsistent(a, sp));
+}
+
+TEST(PhraseTests, AllConsistentPairsFromEmpty) {
+  auto a = readAlignment("");
+  auto sps = minimalConsistentPairs(a, 0);
+  EXPECT_EQ(0, sps.size());
+}
+
+TEST(PhraseTests, AllConsistentPairsSizeOne) {
+  auto a = readAlignment("0-0 1-1");
+  auto sps = minimalConsistentPairs(a, 1);
+  auto f = sps.front();
+  EXPECT_EQ(2, sps.size());
+}
+
+TEST(PhraseTests, AllConsistentPairsSizeTwo) {
+  auto a = readAlignment("0-0 1-1");
+  auto sps = minimalConsistentPairs(a, 2);
+  auto f = sps.front();
+  EXPECT_EQ(3, sps.size());
 }
 
 }
