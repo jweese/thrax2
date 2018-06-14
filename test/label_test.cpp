@@ -18,7 +18,7 @@ TEST(LabelTests, PrintHiero) {
   PhrasalRule rule{asp};
   std::ostringstream s;
   s << LabeledRuleView{ rule, HieroLabeler{} };
-  EXPECT_EQ("[X]", s.str());
+  EXPECT_EQ("[X] ||| a ||| b", s.str());
 }
 
 }

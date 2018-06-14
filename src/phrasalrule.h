@@ -1,7 +1,9 @@
 #pragma once
 
+#include <algorithm>
 #include <array>
 #include <ostream>
+#include <string_view>
 
 #include "label.h"
 #include "phrase.h"
@@ -92,7 +94,12 @@ inline void printRhs(std::ostream& out, LabeledRuleView v) {
 inline std::ostream& operator<<(std::ostream& out, LabeledRuleView v) {
   const auto& [rule, labeler] = v;
   const auto& s = rule.sentence;
+  const static std::string_view kSep = " |||";
   bracket(out, labeler(s, rule.lhs), kLhsIndex);
+  out << kSep;
+  printRhs<true>(out, v);
+  out << kSep;
+  printRhs<false>(out, v);
 }
 
 }
