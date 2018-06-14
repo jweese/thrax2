@@ -98,4 +98,13 @@ TEST(PhraseTests, SpanIndices) {
   }
 }
 
+TEST(PhraseTests, RemoveIndices) {
+  Span s{0, 3};
+  auto is = s.indices();
+  removeIndices(is, {0, 1});
+  ASSERT_EQ(2, is.size());
+  EXPECT_EQ(1, is.front());
+  EXPECT_EQ(2, is.back());
+}
+
 }

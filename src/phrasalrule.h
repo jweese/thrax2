@@ -10,9 +10,10 @@
 namespace jhu::thrax {
 
 constexpr size_t kMaxNonterminals = 4;
+using Rhs = std::array<SpanPair, kMaxNonterminals>;
 
 struct PhrasalRule {
-  std::array<SpanPair, kMaxNonterminals> nts{};
+  Rhs nts{};
   SpanPair lhs{};
   const AlignedSentencePair& sentence;
 
@@ -20,6 +21,25 @@ struct PhrasalRule {
       : PhrasalRule(asp, asp.span()) {}
   explicit PhrasalRule(const AlignedSentencePair& asp, SpanPair root)
       : lhs(root), sentence(asp) {}
+
+  template<bool SourceSide>
+  auto terminalIndices() const {
+    Span lhsSide;
+    if constexpr (SourceSide) {
+      lhsSide = lhs.src;
+    } else {
+      lhsSide = lhs.tgt;
+    }
+    auto result = lhsSide.indices();
+    for (auto nt : nts) {
+      if constexpr (SourceSide) {
+        removeIndices(result, nt.src);
+      } else {
+        removeIndices(result, nt.tgt);
+      }
+    }
+    return result;
+  }
 };
 
 struct LabeledRuleView {
@@ -27,7 +47,7 @@ struct LabeledRuleView {
   const Labeler& labeler;
 };
 
-std::ostream& operator<<(std::ostream& out, LabeledRuleView v) {
+inline std::ostream& operator<<(std::ostream& out, LabeledRuleView v) {
   constexpr int kLhs = 0;
   auto bracket = [&out](std::string_view nt, int index) {
     out << '[' << nt;

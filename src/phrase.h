@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <numeric>
 #include <optional>
 #include <vector>
@@ -9,6 +10,7 @@
 namespace jhu::thrax {
 
 using IndexType = int16_t;
+using Indices = std::vector<IndexType>;
 
 struct Span {
   IndexType start = 0;
@@ -23,11 +25,19 @@ struct Span {
   }
 
   auto indices() const {
-    std::vector<IndexType> result(size());
+    Indices result(size());
     std::iota(result.begin(), result.end(), start);
     return result;
   }
 };
+
+inline void removeIndices(Indices& from, Span s) {
+  auto it = std::remove_if(
+      from.begin(),
+      from.end(),
+      [s](auto i) { return i >= s.start && i < s.end; });
+  from.erase(it, from.end());
+}
 
 constexpr bool disjoint(Span a, Span b) {
   if (b.start < a.start) {
