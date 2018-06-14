@@ -67,4 +67,14 @@ TEST(SentenceTests, ReadAlignedSentencePair) {
   ASSERT_EQ(3, pair.alignment.size());
 }
 
+TEST(SentenceTests, AlignedSentencePairSpan) {
+  std::string_view line = "foo bar baz\tqux\t0-0 1-0 2-0";
+  auto pair = readAlignedSentencePair<false, false>(line);
+  auto sp = pair.span();
+  EXPECT_EQ(0, sp.src.start);
+  EXPECT_EQ(3, sp.src.end);
+  EXPECT_EQ(0, sp.tgt.start);
+  EXPECT_EQ(1, sp.tgt.end);
+}
+
 }

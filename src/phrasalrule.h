@@ -17,7 +17,7 @@ struct PhrasalRule {
   const AlignedSentencePair& sentence;
 
   explicit PhrasalRule(const AlignedSentencePair& asp)
-      : PhrasalRule(asp, SpanPair{}) {}
+      : PhrasalRule(asp, asp.span()) {}
   explicit PhrasalRule(const AlignedSentencePair& asp, SpanPair root)
       : lhs(root), sentence(asp) {}
 };

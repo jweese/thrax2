@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "alignment.h"
+#include "phrase.h"
 
 namespace jhu::thrax {
 
@@ -59,6 +60,13 @@ struct AlignedSentencePair {
     if (!consistent()) {
       throw std::out_of_range("inconsistent aligned sentence pair");
     }
+  }
+
+  SpanPair span() const {
+    return {
+      { 0, static_cast<IndexType>(src.size()) },
+      { 0, static_cast<IndexType>(tgt.size()) },
+    };
   }
 
  private:
