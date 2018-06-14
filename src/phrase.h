@@ -33,6 +33,10 @@ struct Span {
   bool operator==(Span s) const {
     return start == s.start && end == s.end;
   }
+
+  bool contains(Span s) const {
+    return s.start >= start && s.end <= end;
+  }
 };
 
 inline void removeIndices(Indices& from, Span s) {
@@ -68,7 +72,15 @@ struct SpanPair {
   bool operator==(SpanPair sp) const {
     return src == sp.src && tgt == sp.tgt;
   }
+
+  bool contains(SpanPair sp) const {
+    return src.contains(sp.src) && tgt.contains(sp.tgt);
+  }
 };
+
+constexpr bool disjoint(SpanPair a, SpanPair b) {
+  return disjoint(a.src, b.src) && disjoint(a.tgt, b.tgt);
+}
 
 std::optional<Span> minimalTargetSpan(const Alignment& a, Span src);
 bool isConsistent(const Alignment& a, SpanPair sp);
