@@ -1,4 +1,4 @@
-add_executable(all_tests alignment_test.cpp sentence_test.cpp)
+add_executable(all_tests alignment_test.cpp phrase_test.cpp sentence_test.cpp)
 target_include_directories(all_tests PRIVATE ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(all_tests PRIVATE gtest gtest_main thrax2)
 add_subdirectory(gtest)
