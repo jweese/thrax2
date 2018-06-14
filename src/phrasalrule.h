@@ -114,7 +114,7 @@ inline void printRhs(std::ostream& out, LabeledRuleView v) {
     auto index = indices[i];
     if (nt == it
         || nt->empty()
-        || i < nt->template get<SourceSide>().start) {
+        || index < nt->template get<SourceSide>().start) {
       if constexpr (SourceSide) {
         out << s.src[index];
       } else {
