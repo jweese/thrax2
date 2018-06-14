@@ -52,6 +52,14 @@ struct SpanPair {
   auto empty() const {
     return src.empty() || tgt.empty();
   }
+
+  template<bool SourceSide> Span get() const {
+    if constexpr (SourceSide) {
+      return src;
+    } else {
+      return tgt;
+    }
+  }
 };
 
 std::optional<Span> minimalTargetSpan(const Alignment& a, Span src);

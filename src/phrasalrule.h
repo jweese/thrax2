@@ -47,18 +47,52 @@ struct LabeledRuleView {
   const Labeler& labeler;
 };
 
-inline std::ostream& operator<<(std::ostream& out, LabeledRuleView v) {
-  constexpr int kLhs = 0;
-  auto bracket = [&out](std::string_view nt, int index) {
-    out << '[' << nt;
-    if (index != kLhs) {
-      out << ',' << index;
-    }
-    out << ']';
-  };
+constexpr int kLhsIndex = 0;
+inline void bracket(std::ostream& out, std::string_view nt, int index) {
+  out << '[' << nt;
+  if (index != kLhsIndex) {
+    out << ',' << index;
+  }
+  out << ']';
+}
+
+template<bool SourceSide>
+inline void printRhs(std::ostream& out, LabeledRuleView v) {
   const auto& [rule, labeler] = v;
   const auto& s = rule.sentence;
-  bracket(labeler(s, rule.lhs), kLhs);
+  auto nts = rule.nts;
+  std::sort(
+      nts.begin(),
+      nts.end(),
+      [](auto a, auto b) {
+        return a.template get<SourceSide>().start
+             < b.template get<SourceSide>().start;
+      });
+  auto nt = nts.begin();
+  int ntIndex = 1;
+  for (auto i : rule.terminalIndices<SourceSide>()) {
+    out << ' ';
+    if (nt == nts.end()
+        || nt->empty()
+        || i >= nt->template get<SourceSide>().start) {
+      if constexpr (SourceSide) {
+        out << s.src[i];
+      } else {
+        out << s.tgt[i];
+      }
+    } else {
+      // next NT
+      bracket(out, labeler(s, *nt), ntIndex);
+      ntIndex++;
+      nt++;
+    }
+  }
+}
+
+inline std::ostream& operator<<(std::ostream& out, LabeledRuleView v) {
+  const auto& [rule, labeler] = v;
+  const auto& s = rule.sentence;
+  bracket(out, labeler(s, rule.lhs), kLhsIndex);
 }
 
 }
