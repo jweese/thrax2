@@ -17,8 +17,8 @@ struct Span {
     return std::max(end - start, 0);
   }
 
-  auto has_value() const {
-    return start != end;
+  auto empty() const {
+    return start == end;
   }
 };
 
@@ -32,8 +32,8 @@ constexpr bool disjoint(Span a, Span b) {
 struct SpanPair {
   Span src, tgt;
 
-  auto has_value() const {
-    return src.has_value() && tgt.has_value();
+  auto empty() const {
+    return src.empty() || tgt.empty();
   }
 };
 

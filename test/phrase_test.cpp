@@ -80,4 +80,13 @@ TEST(PhraseTests, Disjoint) {
   EXPECT_FALSE(disjoint({3, 4}, {0, 4}));
 }
 
+TEST(PhraseTests, HasValue) {
+  EXPECT_TRUE(Span{}.empty());
+  EXPECT_TRUE(SpanPair{}.empty());
+  Span s{1, 1};
+  EXPECT_TRUE(s.empty());
+  s.end++;
+  EXPECT_FALSE(s.empty());
+}
+
 }
