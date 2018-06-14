@@ -12,7 +12,7 @@ class Labeler {
   virtual ~Labeler() = default;
 };
 
-class HieroLabeler : Labeler {
+class HieroLabeler : public Labeler {
  public:
   std::string operator()(const AlignedSentencePair&, SpanPair) const override {
     return "X";
