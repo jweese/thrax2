@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <functional>
 #include <ostream>
 #include <string_view>
 
@@ -49,6 +50,27 @@ struct PhrasalRule {
         result.begin(),
         result.end(),
         [](auto a, auto b) { return a.src.start < b.src.start; });
+    return result;
+  }
+
+  Alignment alignment() const {
+    Alignment result(sentence.alignment);
+    auto ss = terminalIndices<true>();
+    auto ts = terminalIndices<false>();
+    auto contains = [&ss](auto i) {
+      return std::find(ss.begin(), ss.end(), i.src) != ss.end();
+    };
+    auto idx = [](const Indices& is, auto i) {
+      auto it = std::find(is.begin(), is.end(), i);
+      return static_cast<IndexType>(it - is.begin());
+    };
+    auto it = std::remove_if(
+        result.begin(), result.end(), std::not_fn(contains));
+    result.erase(it, result.end());
+    for (auto& p : result) {
+      p.src = idx(ss, p.src);
+      p.tgt = idx(ts, p.tgt);
+    }
     return result;
   }
 };
