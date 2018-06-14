@@ -77,8 +77,8 @@ struct AlignedSentencePair {
         [this](auto p) {
           return p.src >= 0
               && p.tgt >= 0
-              && p.src < src.size()
-              && p.tgt < tgt.size();
+              && p.src < static_cast<IndexType>(src.size())
+              && p.tgt < static_cast<IndexType>(tgt.size());
         });
   }
 };

@@ -5,6 +5,7 @@
 #include <functional>
 #include <ostream>
 #include <string_view>
+#include <vector>
 
 #include "label.h"
 #include "phrase.h"
@@ -143,5 +144,7 @@ inline std::ostream& operator<<(std::ostream& out, LabeledRuleView v) {
   printAlignment(out, rule.alignment());
   return out;
 }
+
+std::vector<PhrasalRule> extract(const AlignedSentencePair&);
 
 }
