@@ -12,14 +12,10 @@ namespace {
 
 std::mutex inputLock, outputLock;
 
-template<bool Lock>
 bool process() {
   std::string line;
   {
-    std::unique_lock<std::mutex> g(inputLock, std::defer_lock_t{});
-    if constexpr (Lock) {
-      g.lock();
-    }
+    std::lock_guard g(inputLock);
     if (!std::getline(std::cin, line)) {
       return false;
     }
@@ -28,10 +24,7 @@ bool process() {
     auto asp = jhu::thrax::readAlignedSentencePair<false, true>(line);
     auto tree = jhu::thrax::readTree(jhu::thrax::fields(line)[1]);
     jhu::thrax::SAMTLabeler samt{std::move(tree)};
-    std::unique_lock<std::mutex> g(outputLock, std::defer_lock_t{});
-    if constexpr (Lock) {
-      g.lock();
-    }
+    std::lock_guard g(outputLock);
     for (const auto& rule : jhu::thrax::extract(asp, 10)) {
       std::cout << jhu::thrax::LabeledRuleView{ rule, samt } << '\n';
     }
@@ -50,13 +43,13 @@ int main(int argc, char** argv) {
   }
   std::ios::sync_with_stdio(false);
   if (threads < 2) {
-    while (process<false>()) {}
+    while (process()) {}
     return 0;
   }
   std::vector<std::future<void>> workers;
   workers.reserve(threads);
   for (int i = 0; i < threads; i++) {
-    workers.push_back(std::async([]() { while (process<true>()) {} }));
+    workers.push_back(std::async([]() { while (process()) {} }));
   }
   for (auto& f : workers) {
     f.get();
