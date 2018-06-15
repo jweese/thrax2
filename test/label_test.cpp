@@ -89,4 +89,10 @@ TEST(LabelTests, SAMTBackwardApply) {
   EXPECT_EQ("ROOT\\A", sl(SpanPair{{}, { 1, 2 }}));
 }
 
+TEST(LabelTests, SAMTConcat) {
+  auto t = readTree("(ROOT baz (A foo) (B bar))");
+  SAMTLabeler sl(std::move(t));
+  EXPECT_EQ("A+B", sl(SpanPair{{}, { 1, 3 }}));
+}
+
 }

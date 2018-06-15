@@ -82,14 +82,22 @@ std::optional<ForwardApply> forwardApply(const Tree& tree, Span nt) {
 }
 
 std::optional<BackwardApply> backwardApply(const Tree& tree, Span nt) {
-  if (tree.empty()) {
-    return {};
-  }
   for (auto b = nt.start; b >= 0; b--) {
     auto ret = constituent(tree, Span{ b, nt.end });
     auto arg = constituent(tree, Span{ b, nt.start });
     if (ret.has_value() && arg.has_value()) {
       return BackwardApply{ ret->label, arg->label };
+    }
+  }
+  return {};
+}
+
+std::optional<Concat> concatenation(const Tree& tree, Span nt) {
+  for (auto i = nt.start; i < nt.end; i++) {
+    auto a = constituent(tree, Span{ nt.start, i });
+    auto b = constituent(tree, Span{ i, nt.end });
+    if (a.has_value() && b.has_value()) {
+      return Concat{ a->label, b->label };
     }
   }
   return {};
@@ -104,6 +112,9 @@ SAMTLabel label(const Tree& tree, SpanPair nt) {
   }
   if (auto ba = backwardApply(tree, nt.tgt); ba.has_value()) {
     return *ba;
+  }
+  if (auto cat = concatenation(tree, nt.tgt); cat.has_value()) {
+    return *cat;
   }
   return Constituent{"X"};
 }
