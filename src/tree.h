@@ -24,11 +24,12 @@ struct Node {
 };
 
 using Tree = std::vector<Node>;
+using MaybeLabel = std::optional<std::string_view>;
 
-inline std::optional<std::string_view> label(const Tree& t, Span s) {
+inline MaybeLabel label(const Tree& t, Span s) {
   auto it = std::find_if(
       t.begin(), t.end(), [s](auto n) { return n.span == s; });
-  return it == t.end() ? std::optional<std::string_view>{} : it->label;
+  return it == t.end() ? MaybeLabel{} : it->label;
 }
 
 Tree readTree(std::string_view line);

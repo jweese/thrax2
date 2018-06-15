@@ -57,8 +57,16 @@ struct LabelVisitor {
   }
 };
 
-SAMTLabel label(const Tree&, SpanPair) {
-  return Constituent{"X"};
+MaybeLabel constituent(const Tree& tree, SpanPair nt) {
+  // search from the back to get the lowest label
+  auto it = std::find_if(
+      tree.rbegin(), tree.rend(), [s=nt.tgt](auto n) { return n.span == s; });
+  return it == tree.rend() ? MaybeLabel{} : it->label;
+}
+
+SAMTLabel label(const Tree& tree, SpanPair nt) {
+  auto label = constituent(tree, nt);
+  return label.has_value() ? Constituent{*label} :  Constituent{"X"};
 }
 
 }  // namespace
