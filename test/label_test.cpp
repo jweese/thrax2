@@ -66,4 +66,10 @@ TEST(LabelTests, PrintHieroMixed2) {
   EXPECT_EQ("[X]\t[X,1] [X,2]\t[X,1] d [X,2]\t", s.str());
 }
 
+TEST(LabelTests, SAMTConstituent) {
+  auto t = readTree("(ROOT (A foo) (B bar))");
+  SAMTLabeler sl(t);
+  EXPECT_EQ("A", sl(SpanPair{{}, { 0, 1 }}));
+}
+
 }

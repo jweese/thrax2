@@ -21,7 +21,7 @@ class HieroLabeler : public Labeler {
 
 class SAMTLabeler : public Labeler {
  public:
-  explicit SAMTLabeler(std::string_view treeRep) : tree_(readTree(treeRep)) {}
+  explicit SAMTLabeler(Tree t) : tree_(std::move(t)) {}
   std::string operator()(SpanPair nt) const override;
 
  private:
