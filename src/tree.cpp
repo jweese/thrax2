@@ -13,8 +13,9 @@ Tree readTree(std::string_view line) {
   Node* curr = nullptr;
   for (auto t : tokens) {
     if (t.front() == '(') {
+      IndexType start = result.empty() ? 0 : result.back().span.end;
       t.remove_prefix(1);
-      result.push_back(Node{ {}, t, curr });
+      result.push_back(Node{ { start, start }, t, curr });
       curr = &result.back();
     } else {
       result.back().add_suffix();
