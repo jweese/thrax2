@@ -13,19 +13,21 @@ Tree readTree(std::string_view line) {
   Node* curr = nullptr;
   for (auto t : tokens) {
     if (t.front() == '(') {
-      IndexType start = result.empty() ? 0 : result.back().span.end;
+      IndexType start = curr == nullptr ? 0 : curr->span.end;
       t.remove_prefix(1);
       result.push_back(Node{ { start, start }, t, curr });
       curr = &result.back();
     } else {
-      result.back().add_suffix();
-    }
-    while (!t.empty() && t.back() == ')') {
-      if (curr != nullptr) {
-        curr = curr->parent;
-      } else {
+      if (curr == nullptr) {
         throw std::invalid_argument("bad tree: " + std::string(line));
       }
+      curr->add_suffix();
+    }
+    while (!t.empty() && t.back() == ')') {
+      if (curr == nullptr) {
+        throw std::invalid_argument("bad tree: " + std::string(line));
+      }
+      curr = curr->parent;
       t.remove_suffix(1);
     }
   }

@@ -68,14 +68,25 @@ TEST(LabelTests, PrintHieroMixed2) {
 
 TEST(LabelTests, SAMTConstituent) {
   auto t = readTree("(ROOT (A foo) (B bar))");
-  SAMTLabeler sl(t);
+  SAMTLabeler sl(std::move(t));
   EXPECT_EQ("A", sl(SpanPair{{}, { 0, 1 }}));
 }
 
 TEST(LabelTests, SAMTForwardApply) {
   auto t = readTree("(ROOT foo (B bar))");
-  SAMTLabeler sl(t);
+  SAMTLabeler sl(std::move(t));
   EXPECT_EQ("ROOT/B", sl(SpanPair{{}, { 0, 1 }}));
+}
+
+TEST(LabelTests, SAMTBackwardApply) {
+  auto t = readTree("(ROOT (A foo) bar)");
+  ASSERT_EQ(2, t.size());
+  Span root{0, 2};
+  EXPECT_EQ(root, t.front().span);
+  root.end = 1;
+  EXPECT_EQ(root, t.back().span);
+  SAMTLabeler sl(std::move(t));
+  EXPECT_EQ("ROOT\\A", sl(SpanPair{{}, { 1, 2 }}));
 }
 
 }
