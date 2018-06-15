@@ -72,4 +72,10 @@ TEST(LabelTests, SAMTConstituent) {
   EXPECT_EQ("A", sl(SpanPair{{}, { 0, 1 }}));
 }
 
+TEST(LabelTests, SAMTForwardApply) {
+  auto t = readTree("(ROOT foo (B bar))");
+  SAMTLabeler sl(t);
+  EXPECT_EQ("ROOT/B", sl(SpanPair{{}, { 0, 1 }}));
+}
+
 }
