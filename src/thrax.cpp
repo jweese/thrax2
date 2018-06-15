@@ -1,6 +1,7 @@
 #include <future>
 #include <iostream>
 #include <mutex>
+#include <sstream>
 #include <vector>
 
 #include "label.h"
@@ -24,10 +25,12 @@ bool process() {
     auto asp = jhu::thrax::readAlignedSentencePair<false, true>(line);
     auto tree = jhu::thrax::readTree(jhu::thrax::fields(line)[1]);
     jhu::thrax::SAMTLabeler samt{std::move(tree)};
-    std::lock_guard g(outputLock);
+    std::ostringstream out;
     for (const auto& rule : jhu::thrax::extract(asp, 10)) {
-      std::cout << jhu::thrax::LabeledRuleView{ rule, samt } << '\n';
+      out << jhu::thrax::LabeledRuleView{ rule, samt } << '\n';
     }
+    std::lock_guard g(outputLock);
+    std::cout << out.str();
   } catch (std::exception& e) {
     std::cerr << e.what() << ' ' << line << '\n';
   }
