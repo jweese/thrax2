@@ -1,0 +1,29 @@
+#!/usr/bin/perl -w
+use strict;
+
+# input: s \t t \t #C(s, t)
+# output: t \t s \t logp(t|s)
+
+my %count;
+
+while (<>) {
+  chomp;
+  if (/^(.*)\t(\d+)$/) {
+    my $c = $2;
+    $count{$1} = $c;
+    (my $s = $1) =~ s/\t.*//;
+    $count{$s} += $c;
+  }
+}
+
+my ($s, $marginal);
+foreach (sort keys %count) {
+  unless (/\t/) {
+    $s = $_;
+    $marginal = $count{$s};
+  } else {
+    my $p = log($count{$_} / $marginal);
+    (my $t = $_) =~ s/.*\t//;
+    print "$t\t$s\t$p\n";
+  }
+}

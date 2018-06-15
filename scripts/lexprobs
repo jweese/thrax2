@@ -1,0 +1,9 @@
+#!/bin/bash
+par=1
+for arg; do
+  if [[ "$arg" = -j* ]]; then
+    par="${arg:2}"
+  fi
+done
+./unbar | ./wordpairs \
+  | sort --parallel="$par" | uniq -c | ./fixcount | ./relfreq

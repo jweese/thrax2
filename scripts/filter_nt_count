@@ -1,0 +1,8 @@
+#!/usr/bin/perl -w
+use strict;
+
+my $max = shift;
+
+while (<>) {
+  print unless grep { $1 > $max } (/,(\d+)\]/g); 
+}

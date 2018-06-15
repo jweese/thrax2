@@ -1,0 +1,6 @@
+#!/usr/bin/awk -f
+{
+  cnt = $1;
+  sub(/^\s+[0-9]+\s+/, "");
+  print $0 "\t" cnt;
+}

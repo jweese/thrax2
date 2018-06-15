@@ -1,0 +1,33 @@
+#!/usr/bin/perl -w
+use strict;
+
+# input: source \t target \t alignment
+# output: s \t t for each aligned word pair
+#         s \t "" for unaligned source words
+
+sub alignment {
+  my %points;
+  foreach (/\d+-\d+/g) {
+    my ($s, $t) = split "-";
+    push @{$points{$s}}, $t;
+  }
+  return %points;
+}
+
+while (<>) {
+  chomp;
+  my ($src, $tgt, $al) = split /\t/;
+  my @ss = split " ", $src;
+  my @ts = split " ", $tgt;
+  my %a = alignment $al;
+  for (my $i = 0; $i < @ss; $i++) {
+    my $s = $ss[$i];
+    if (defined $a{$i}) {
+      foreach my $j (@{$a{$i}}) {
+        print "$s\t$ts[$j]\n";
+      }
+    } else {
+      print "$s\t\n";
+    }
+  }
+}
