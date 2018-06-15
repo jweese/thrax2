@@ -120,7 +120,7 @@ inline void printRhs(std::ostream& out, LabeledRuleView v) {
       if (i != indices.front()) {
         out << ' ';
       }
-      bracket(out, labeler(s, *nt), rule.ntIndex(*nt));
+      bracket(out, labeler(*nt), rule.ntIndex(*nt));
       nt++;
     }
   }
@@ -128,9 +128,8 @@ inline void printRhs(std::ostream& out, LabeledRuleView v) {
 
 inline std::ostream& operator<<(std::ostream& out, LabeledRuleView v) {
   const auto& [rule, labeler] = v;
-  const auto& s = rule.sentence;
   const static std::string_view kSep = "\t";
-  bracket(out, labeler(s, rule.lhs), kLhsIndex);
+  bracket(out, labeler(rule.lhs), kLhsIndex);
   out << kSep;
   printRhs<true>(out, v);
   out << kSep;

@@ -7,10 +7,9 @@
 namespace jhu::thrax {
 
 TEST(LabelTests, Hiero) {
-  auto asp = readAlignedSentencePair<false, false>("a\tb\t0-0");
   SpanPair sp;
   HieroLabeler hl;
-  ASSERT_EQ("X", hl(asp, sp));
+  ASSERT_EQ("X", hl(sp));
 }
 
 TEST(LabelTests, PrintHieroLexical) {
