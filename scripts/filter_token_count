@@ -1,0 +1,14 @@
+#!/usr/bin/perl -w
+use strict;
+
+my $max = shift;
+
+sub token_count {
+  my $_ = shift;
+  (() = m/ /g) + 1;
+}
+
+while (<>) {
+  my (undef, $src, $tgt, undef) = split /\t/, $_, 4;
+  print if (token_count($src) <= $max and token_count($tgt) <= $max);
+}
