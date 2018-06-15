@@ -23,6 +23,8 @@ Tree readTree(std::string_view line) {
     while (!t.empty() && t.back() == ')') {
       if (curr != nullptr) {
         curr = curr->parent;
+      } else {
+        throw std::invalid_argument("bad tree: " + std::string(line));
       }
       t.remove_suffix(1);
     }

@@ -36,8 +36,12 @@ TEST(TreeTests, Small) {
   expectNode(1, 2, "B", &t[0], t[2]);
 }
 
-TEST(TreeTests, Unbalanced) {
+TEST(TreeTests, TooFewRightParens) {
  EXPECT_THROW(readTree("(ROOT"), std::invalid_argument);
+}
+
+TEST(TreeTests, TooManyRightParens) {
+ EXPECT_THROW(readTree("(ROOT foo))"), std::invalid_argument);
 }
 
 }
