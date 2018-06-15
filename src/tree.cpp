@@ -24,6 +24,7 @@ Tree readTree(std::string_view line) {
       if (curr != nullptr) {
         curr = curr->parent;
       }
+      t.remove_suffix(1);
     }
   }
   return result;
