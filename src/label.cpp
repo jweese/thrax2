@@ -1,5 +1,6 @@
 #include "label.h"
 
+#include <string>
 #include <variant>
 
 namespace jhu::thrax {
@@ -36,10 +37,34 @@ using SAMTLabel = std::variant<
   DoubleConcat
 >;
 
+struct LabelVisitor {
+  std::string operator()(Constituent c) const {
+    return std::string(c.label);
+  }
+  std::string operator()(ForwardApply fa) const {
+    return std::string(fa.result) + "/" + std::string(fa.arg);
+  }
+  std::string operator()(BackwardApply ba) const {
+    return std::string(ba.result) + "\\" + std::string(ba.arg);
+  }
+  std::string operator()(Concat c) const {
+    return std::string(c.a) + "+" + std::string(c.b);
+  }
+  std::string operator()(DoubleConcat dc) const {
+    return std::string(dc.a)
+        + "+" + std::string(dc.b)
+        + "+" + std::string(dc.c);
+  }
+};
+
+SAMTLabel label(const Tree&, SpanPair) {
+  return Constituent{"X"};
+}
+
 }  // namespace
 
-std::string SAMTLabeler::operator()(SpanPair) const {
-  return "";
+std::string SAMTLabeler::operator()(SpanPair nt) const {
+  return std::visit(LabelVisitor{}, label(tree_, nt));
 }
 
 }
