@@ -36,4 +36,8 @@ TEST(TreeTests, Small) {
   expectNode(1, 2, "B", &t[0], t[2]);
 }
 
+TEST(TreeTests, Unbalanced) {
+ EXPECT_THROW(readTree("(ROOT"), std::invalid_argument);
+}
+
 }

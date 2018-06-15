@@ -27,6 +27,10 @@ Tree readTree(std::string_view line) {
       t.remove_suffix(1);
     }
   }
+  if (curr != nullptr) {
+    // Not enough close parens
+    throw std::invalid_argument("bad tree: " + std::string(line));
+  }
   return result;
 }
 
