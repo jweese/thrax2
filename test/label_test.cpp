@@ -95,4 +95,10 @@ TEST(LabelTests, SAMTConcat) {
   EXPECT_EQ("A+B", sl(SpanPair{{}, { 1, 3 }}));
 }
 
+TEST(LabelTests, SAMTDoubleConcat) {
+  auto t = readTree("(ROOT baz (A foo) (B bar) (C qux))");
+  SAMTLabeler sl(std::move(t));
+  EXPECT_EQ("A+B+C", sl(SpanPair{{}, { 1, 4 }}));
+}
+
 }

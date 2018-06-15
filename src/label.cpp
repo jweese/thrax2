@@ -103,6 +103,17 @@ std::optional<Concat> concatenation(const Tree& tree, Span nt) {
   return {};
 }
 
+std::optional<DoubleConcat> doubleConcatenation(const Tree& tree, Span nt) {
+  for (auto i = nt.start; i < nt.end; i++) {
+    auto a = constituent(tree, Span{ nt.start, i });
+    auto rest = concatenation(tree, Span{ i, nt.end });
+    if (a.has_value() && rest.has_value()) {
+      return DoubleConcat{ a->label, rest->a, rest->b };
+    }
+  }
+  return {};
+}
+
 SAMTLabel label(const Tree& tree, SpanPair nt) {
   if (auto label = constituent(tree, nt.tgt); label.has_value()) {
     return *label;
@@ -115,6 +126,9 @@ SAMTLabel label(const Tree& tree, SpanPair nt) {
   }
   if (auto cat = concatenation(tree, nt.tgt); cat.has_value()) {
     return *cat;
+  }
+  if (auto dc = doubleConcatenation(tree, nt.tgt); dc.has_value()) {
+    return *dc;
   }
   return Constituent{"X"};
 }
