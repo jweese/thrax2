@@ -14,3 +14,7 @@ gtest_discover_tests(all_tests)
 add_executable(hiero_console hiero_console.cpp)
 target_include_directories(hiero_console PRIVATE ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(hiero_console PRIVATE thrax2)
+
+add_executable(samt_console samt_console.cpp)
+target_include_directories(samt_console PRIVATE ${PROJECT_SOURCE_DIR}/src)
+target_link_libraries(samt_console PRIVATE thrax2)
