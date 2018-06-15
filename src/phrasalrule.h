@@ -50,6 +50,11 @@ struct PhrasalRule {
     return nts;
   }
 
+  int ntIndex(SpanPair nt) const {
+    auto it = std::find(nts.begin(), nts.end(), nt);
+    return static_cast<int>(1 + std::distance(nts.begin(), it));
+  }
+
   Alignment alignment() const {
     Alignment result(sentence.alignment);
     auto ss = terminalIndices<true>();
@@ -92,8 +97,6 @@ inline void printRhs(std::ostream& out, LabeledRuleView v) {
   const auto& s = rule.sentence;
   constexpr auto empty = [](auto nt) { return nt.empty(); };
   auto nts = rule.nts;
-  auto sourceOrder = rule.ntsInSourceOrder();
-  std::remove_if(sourceOrder.begin(), sourceOrder.end(), empty);
   auto it = std::remove_if(nts.begin(), nts.end(), empty);
   if constexpr (!SourceSide) {
     std::sort(
@@ -103,26 +106,18 @@ inline void printRhs(std::ostream& out, LabeledRuleView v) {
   }
   auto nt = nts.begin();
   auto indices = rule.lhs.get<SourceSide>().indices();
-  for (size_t i = 0; i < indices.size(); i++) {
-    if (i > 0) {
+  for (auto i : indices) {
+    if (i != indices.front()) {
       out << ' ';
     }
-    auto index = indices[i];
-    if (nt == it
-        || nt->empty()
-        || index < nt->template get<SourceSide>().start) {
+    if (nt == it || i < nt->template get<SourceSide>().start) {
       if constexpr (SourceSide) {
-        out << s.src[index];
+        out << s.src[i];
       } else {
-        out << s.tgt[index];
+        out << s.tgt[i];
       }
-    } else {
-      // next NT
-      auto iter = std::find(sourceOrder.begin(), sourceOrder.end(), *nt);
-      auto idx = static_cast<int>(1 + std::distance(sourceOrder.begin(), iter));
-      bracket(out, labeler(s, *nt), idx);
-      // skip terminals
-      i = nt->template get<SourceSide>().end - 1;
+    } else if (i == nt->template get<SourceSide>().end - 1) {
+      bracket(out, labeler(s, *nt), rule.ntIndex(*nt));
       nt++;
     }
   }
