@@ -121,6 +121,8 @@ inline void printRhs(std::ostream& out, LabeledRuleView v) {
       auto iter = std::find(sourceOrder.begin(), sourceOrder.end(), *nt);
       auto idx = static_cast<int>(1 + std::distance(sourceOrder.begin(), iter));
       bracket(out, labeler(s, *nt), idx);
+      // skip terminals
+      i = nt->template get<SourceSide>().end - 1;
       nt++;
     }
   }
