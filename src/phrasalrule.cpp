@@ -19,8 +19,8 @@ std::optional<PhrasalRule> addNonterminal(PhrasalRule r, SpanPair nt) {
     return {};
   }
   if (!std::all_of(
-        r.nts.begin(), r.nts.end(), [nt](auto i) {
-          return i.empty() || disjoint(i, nt);
+        r.nts.begin(), it, [nt](auto i) {
+          return disjoint(i, nt);
         })) {
     return {};
   }

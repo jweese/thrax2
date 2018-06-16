@@ -70,7 +70,7 @@ struct PhrasalRule {
     }
     auto ts = targetTerminalIndices();
     auto contains = [&ss](auto i) {
-      return std::find(ss.begin(), ss.end(), i.src) != ss.end();
+      return std::binary_search(ss.begin(), ss.end(), i.src);
     };
     auto idx = [](const Indices& is, auto i) {
       auto it = std::find(is.begin(), is.end(), i);
