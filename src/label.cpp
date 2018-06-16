@@ -70,8 +70,11 @@ std::optional<ForwardApply> forwardApply(const Tree& tree, Span nt) {
   }
   for (auto e = nt.end; e <= tree.front().span.end; e++) {
     auto ret = constituent(tree, Span{ nt.start, e });
+    if (!ret.has_value()) {
+      continue;
+    }
     auto arg = constituent(tree, Span{ nt.end, e });
-    if (ret.has_value() && arg.has_value()) {
+    if (arg.has_value()) {
       return ForwardApply{ ret->label, arg->label };
     }
   }
@@ -81,8 +84,11 @@ std::optional<ForwardApply> forwardApply(const Tree& tree, Span nt) {
 std::optional<BackwardApply> backwardApply(const Tree& tree, Span nt) {
   for (auto b = nt.start; b >= 0; b--) {
     auto ret = constituent(tree, Span{ b, nt.end });
+    if (!ret.has_value()) {
+      continue;
+    }
     auto arg = constituent(tree, Span{ b, nt.start });
-    if (ret.has_value() && arg.has_value()) {
+    if (arg.has_value()) {
       return BackwardApply{ ret->label, arg->label };
     }
   }
@@ -92,8 +98,11 @@ std::optional<BackwardApply> backwardApply(const Tree& tree, Span nt) {
 std::optional<Concat> concatenation(const Tree& tree, Span nt) {
   for (auto i = nt.start; i < nt.end; i++) {
     auto a = constituent(tree, Span{ nt.start, i });
+    if (!a.has_value()) {
+      continue;
+    }
     auto b = constituent(tree, Span{ i, nt.end });
-    if (a.has_value() && b.has_value()) {
+    if (b.has_value()) {
       return Concat{ a->label, b->label };
     }
   }
@@ -103,8 +112,11 @@ std::optional<Concat> concatenation(const Tree& tree, Span nt) {
 std::optional<DoubleConcat> doubleConcatenation(const Tree& tree, Span nt) {
   for (auto i = nt.start; i < nt.end; i++) {
     auto a = constituent(tree, Span{ nt.start, i });
+    if (!a.has_value()) {
+      continue;
+    }
     auto rest = concatenation(tree, Span{ i, nt.end });
-    if (a.has_value() && rest.has_value()) {
+    if (rest.has_value()) {
       return DoubleConcat{ a->label, rest->a, rest->b };
     }
   }
