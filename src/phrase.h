@@ -45,11 +45,12 @@ struct Span {
 };
 
 inline void removeIndices(Indices& from, Span s) {
-  auto it = std::remove_if(
-      from.begin(),
-      from.end(),
-      [s](auto i) { return i >= s.start && i < s.end; });
-  from.erase(it, from.end());
+  auto b = std::lower_bound(from.begin(), from.end(), s.start);
+  auto e = std::lower_bound(from.begin(), from.end(), s.end);
+  if (b != from.end() && *b < s.start) {
+    b++;
+  }
+  from.erase(b, e);
 }
 
 constexpr bool disjoint(Span a, Span b) {
