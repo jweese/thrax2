@@ -68,14 +68,19 @@ std::optional<ForwardApply> forwardApply(const Tree& tree, Span nt) {
   if (tree.empty()) {
     return {};
   }
-  for (auto e = nt.end; e <= tree.front().span.end; e++) {
-    auto ret = constituent(tree, Span{ nt.start, e });
-    if (!ret.has_value()) {
-      continue;
-    }
-    auto arg = constituent(tree, Span{ nt.end, e });
-    if (arg.has_value()) {
-      return ForwardApply{ ret->label, arg->label };
+  constexpr auto byStart = [](const auto& a, const auto& b) {
+    return a.span.start < b.span.start;
+  };
+  auto [retStart, retEnd] = std::equal_range(
+      tree.begin(), tree.end(), Node{ nt, {}, nullptr }, byStart);
+  auto [argStart, argEnd] = std::equal_range(
+      tree.begin(), tree.end(), Node{ Span{nt.end, 0 }, {}, nullptr }, byStart);
+  // Reverse the ranges so we can get the lowest constituents.
+  for (auto r = retEnd - 1; r >= retStart; r--) {
+    for (auto a = argEnd - 1; a >= argStart; a--) {
+      if (r->span.end == a->span.end) {
+        return ForwardApply{ r->label, a->label };
+      }
     }
   }
   return {};
