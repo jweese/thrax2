@@ -27,9 +27,19 @@ using Tree = std::vector<Node>;
 using MaybeLabel = std::optional<std::string_view>;
 
 inline MaybeLabel label(const Tree& t, Span s) {
-  auto it = std::find_if(
-      t.begin(), t.end(), [s](auto n) { return n.span == s; });
-  return it == t.end() ? MaybeLabel{} : it->label;
+  auto n = Node{ s, {}, nullptr };
+  auto it = std::upper_bound(
+      t.begin(), t.end(), n,
+      [](const auto& a, const auto& b) {
+        return a.span.start < b.span.start ||
+              (a.span.start == b.span.start && a.span.end > b.span.end);
+              // Among nodes that have the same start point, the greater
+              // end point comes first (i.e. larger spans before smaller).
+      });
+  if (it == t.begin() || std::prev(it)->span != s) {
+    return {};
+  }
+  return std::prev(it)->label;
 }
 
 Tree readTree(std::string_view line);

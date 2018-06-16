@@ -35,6 +35,10 @@ struct Span {
     return start == s.start && end == s.end;
   }
 
+  bool operator!=(Span s) const {
+    return !(*this == s);
+  }
+
   bool contains(Span s) const {
     return s.start >= start && s.end <= end;
   }
