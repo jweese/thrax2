@@ -58,13 +58,10 @@ struct LabelVisitor {
 };
 
 std::optional<Constituent> constituent(const Tree& tree, Span nt) {
-  // search from the back to get the lowest label
-  auto it = std::find_if(
-      tree.rbegin(), tree.rend(), [nt](auto n) { return n.span == nt; });
-  if (it == tree.rend()) {
-    return {};
+  if (auto l = label(tree, nt); l.has_value()) {
+    return Constituent{*l};
   }
-  return Constituent{it->label};
+  return {};
 }
 
 std::optional<ForwardApply> forwardApply(const Tree& tree, Span nt) {
