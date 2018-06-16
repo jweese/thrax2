@@ -69,16 +69,20 @@ struct PhrasalRule {
       return {};
     }
     auto ts = targetTerminalIndices();
-    auto contains = [&ss](auto i) {
-      return std::binary_search(ss.begin(), ss.end(), i.src);
-    };
     auto idx = [](const Indices& is, auto i) {
-      auto it = std::find(is.begin(), is.end(), i);
+      auto it = std::lower_bound(is.begin(), is.end(), i);
       return static_cast<IndexType>(it - is.begin());
     };
     Alignment result(sentence.alignment);
-    auto it = std::remove_if(
-        result.begin(), result.end(), std::not_fn(contains));
+    Alignment source(ss.size());
+    std::transform(
+        ss.begin(), ss.end(), source.begin(),
+        [](auto s) { return Point{ s, 0 }; });
+    auto it = std::set_intersection(
+        result.begin(), result.end(),
+        source.begin(), source.end(),
+        result.begin(),
+        [](auto p, auto i) { return p.src < i.src; });
     result.erase(it, result.end());
     for (auto& p : result) {
       p.src = idx(ss, p.src);
