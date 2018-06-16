@@ -19,6 +19,11 @@ class HieroLabeler : public Labeler {
   }
 };
 
+struct CachedLabel {
+  Span span;
+  std::string label;
+};
+
 class SAMTLabeler : public Labeler {
  public:
   explicit SAMTLabeler(Tree t) : tree_(std::move(t)) {}
@@ -26,11 +31,8 @@ class SAMTLabeler : public Labeler {
 
  private:
   Tree tree_;
-  struct CachedLabel {
-    Span span;
-    std::string label;
-  };
   mutable std::vector<CachedLabel> cache_;
+  mutable CachedLabel key_;
 };
 
 }

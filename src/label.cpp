@@ -146,18 +146,22 @@ SAMTLabel label(const Tree& tree, SpanPair nt) {
   return Constituent{"X"};
 }
 
+constexpr bool spanOrder(const CachedLabel& la, const CachedLabel& lb) {
+  auto a = la.span;
+  auto b = lb.span;
+  return a.start < b.start || (a.start == b.start && a.end < b.end);
+}
+
 }  // namespace
 
 std::string SAMTLabeler::operator()(SpanPair nt) const {
-  auto it = std::find_if(
-      cache_.begin(),
-      cache_.end(),
-      [nt](const auto& cl) { return cl.span == nt.tgt; });
-  if (it != cache_.end()) {
+  key_.span = nt.tgt;
+  auto it = std::lower_bound(cache_.begin(), cache_.end(), key_, spanOrder);
+  if (it != cache_.end() && it->span == nt.tgt) {
     return it->label;
   }
   auto result = std::visit(LabelVisitor{}, label(tree_, nt));
-  cache_.push_back(CachedLabel{ nt.tgt, result });
+  cache_.insert(it, CachedLabel{ nt.tgt, result });
   return result;
 }
 
