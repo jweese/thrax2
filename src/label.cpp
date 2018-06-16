@@ -64,13 +64,14 @@ std::optional<Constituent> constituent(const Tree& tree, Span nt) {
   return {};
 }
 
+constexpr auto byStart = [](const auto& a, const auto& b) {
+  return a.span.start < b.span.start;
+};
+
 std::optional<ForwardApply> forwardApply(const Tree& tree, Span nt) {
   if (tree.empty()) {
     return {};
   }
-  constexpr auto byStart = [](const auto& a, const auto& b) {
-    return a.span.start < b.span.start;
-  };
   auto [retStart, retEnd] = std::equal_range(
       tree.begin(), tree.end(), Node{ nt, {}, nullptr }, byStart);
   auto [argStart, argEnd] = std::equal_range(
@@ -101,28 +102,24 @@ std::optional<BackwardApply> backwardApply(const Tree& tree, Span nt) {
 }
 
 std::optional<Concat> concatenation(const Tree& tree, Span nt) {
-  for (auto i = nt.start; i < nt.end; i++) {
-    auto a = constituent(tree, Span{ nt.start, i });
-    if (!a.has_value()) {
-      continue;
-    }
-    auto b = constituent(tree, Span{ i, nt.end });
+  auto [s, e] = std::equal_range(
+      tree.begin(), tree.end(), Node{ nt, {}, nullptr }, byStart);
+  for (auto it = s; it < e; it++) {
+    auto b = constituent(tree, Span{ it->span.end, nt.end });
     if (b.has_value()) {
-      return Concat{ a->label, b->label };
+      return Concat{ it->label, b->label };
     }
   }
   return {};
 }
 
 std::optional<DoubleConcat> doubleConcatenation(const Tree& tree, Span nt) {
-  for (auto i = nt.start; i < nt.end; i++) {
-    auto a = constituent(tree, Span{ nt.start, i });
-    if (!a.has_value()) {
-      continue;
-    }
-    auto rest = concatenation(tree, Span{ i, nt.end });
+  auto [s, e] = std::equal_range(
+      tree.begin(), tree.end(), Node{ nt, {}, nullptr }, byStart);
+  for (auto it = s; it < e; it++) {
+    auto rest = concatenation(tree, Span{ it->span.end, nt.end });
     if (rest.has_value()) {
-      return DoubleConcat{ a->label, rest->a, rest->b };
+      return DoubleConcat{ it->label, rest->a, rest->b };
     }
   }
   return {};
