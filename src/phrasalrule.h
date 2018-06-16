@@ -68,22 +68,18 @@ struct PhrasalRule {
     if (ss.empty()) {
       return {};
     }
+    const auto& al = sentence.alignment;
+    auto result = copyPoints(al, lhs.src.start, lhs.src.end);
+    for (auto nt : nts) {
+      if (!nt.empty()) {
+        cutPoints(result, nt.src.start, nt.src.end);
+      }
+    }
     auto ts = targetTerminalIndices();
     auto idx = [](const Indices& is, auto i) {
       auto it = std::lower_bound(is.begin(), is.end(), i);
       return static_cast<IndexType>(it - is.begin());
     };
-    Alignment result(sentence.alignment);
-    Alignment source(ss.size());
-    std::transform(
-        ss.begin(), ss.end(), source.begin(),
-        [](auto s) { return Point{ s, 0 }; });
-    auto it = std::set_intersection(
-        result.begin(), result.end(),
-        source.begin(), source.end(),
-        result.begin(),
-        [](auto p, auto i) { return p.src < i.src; });
-    result.erase(it, result.end());
     for (auto& p : result) {
       p.src = idx(ss, p.src);
       p.tgt = idx(ts, p.tgt);
