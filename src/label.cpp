@@ -88,14 +88,16 @@ std::optional<ForwardApply> forwardApply(const Tree& tree, Span nt) {
 }
 
 std::optional<BackwardApply> backwardApply(const Tree& tree, Span nt) {
-  for (auto b = nt.start; b >= 0; b--) {
-    auto ret = constituent(tree, Span{ b, nt.end });
-    if (!ret.has_value()) {
+  for (const auto& node : tree) {
+    if (node.span.start >= nt.start) {
+      break;
+    }
+    if (node.span.end != nt.end) {
       continue;
     }
-    auto arg = constituent(tree, Span{ b, nt.start });
+    auto arg = label(tree, Span{ node.span.start, nt.start });
     if (arg.has_value()) {
-      return BackwardApply{ ret->label, arg->label };
+      return BackwardApply{ node.label, *arg };
     }
   }
   return {};
