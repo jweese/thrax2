@@ -149,7 +149,16 @@ SAMTLabel label(const Tree& tree, SpanPair nt) {
 }  // namespace
 
 std::string SAMTLabeler::operator()(SpanPair nt) const {
-  return std::visit(LabelVisitor{}, label(tree_, nt));
+  auto it = std::find_if(
+      cache_.begin(),
+      cache_.end(),
+      [nt](const auto& cl) { return cl.span == nt.tgt; });
+  if (it != cache_.end()) {
+    return it->label;
+  }
+  auto result = std::visit(LabelVisitor{}, label(tree_, nt));
+  cache_.push_back(CachedLabel{ nt.tgt, result });
+  return result;
 }
 
 }

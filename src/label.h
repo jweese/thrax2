@@ -26,6 +26,11 @@ class SAMTLabeler : public Labeler {
 
  private:
   Tree tree_;
+  struct CachedLabel {
+    Span span;
+    std::string label;
+  };
+  mutable std::vector<CachedLabel> cache_;
 };
 
 }
