@@ -6,10 +6,10 @@ namespace jhu::thrax {
 TEST(RuleTests, Indices) {
   auto asp = readAlignedSentencePair<false, false>("a\tb\t0-0");
   PhrasalRule rule{asp};
-  auto is = rule.terminalIndices<true>();
+  auto is = rule.sourceTerminalIndices();
   ASSERT_EQ(1, is.size());
   EXPECT_EQ(0, is.front());
-  is = rule.terminalIndices<false>();
+  is = rule.targetTerminalIndices();
   ASSERT_EQ(1, is.size());
   EXPECT_EQ(0, is.front());
 }
@@ -17,10 +17,10 @@ TEST(RuleTests, Indices) {
 TEST(RuleTests, IndicesNonDefault) {
   auto asp = readAlignedSentencePair<false, false>("a c\tb d\t0-0");
   PhrasalRule rule{asp, {{ 1, 2}, {0, 1}}};
-  auto is = rule.terminalIndices<true>();
+  auto is = rule.sourceTerminalIndices();
   ASSERT_EQ(1, is.size());
   EXPECT_EQ(1, is.front());
-  is = rule.terminalIndices<false>();
+  is = rule.targetTerminalIndices();
   ASSERT_EQ(1, is.size());
   EXPECT_EQ(0, is.front());
 }

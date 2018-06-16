@@ -26,21 +26,29 @@ struct PhrasalRule {
   explicit PhrasalRule(const AlignedSentencePair& asp, SpanPair root)
       : lhs(root), sentence(asp) {}
 
-  template<bool SourceSide>
-  auto terminalIndices() const {
-    Span lhsSide;
-    if constexpr (SourceSide) {
-      lhsSide = lhs.src;
-    } else {
-      lhsSide = lhs.tgt;
-    }
-    auto result = lhsSide.indices();
+  auto sourceTerminalIndices() const {
+    auto sz = lhs.src.size();
     for (auto nt : nts) {
-      if constexpr (SourceSide) {
-        removeIndices(result, nt.src);
+      sz -= nt.src.size();
+    }
+    Indices result;
+    result.reserve(sz);
+    auto nt = nts.begin();
+    for (IndexType i = lhs.src.start; i < lhs.src.end; i++) {
+      if (!nt->empty() && i == nt->src.start) {
+        i = nt->src.end - 1;
+        nt++;
       } else {
-        removeIndices(result, nt.tgt);
+        result.push_back(i);
       }
+    }
+    return result;
+  }
+
+  auto targetTerminalIndices() const {
+    auto result = lhs.tgt.indices();
+    for (auto nt : nts) {
+      removeIndices(result, nt.tgt);
     }
     return result;
   }
@@ -56,11 +64,11 @@ struct PhrasalRule {
   }
 
   Alignment alignment() const {
-    auto ss = terminalIndices<true>();
+    auto ss = sourceTerminalIndices();
     if (ss.empty()) {
       return {};
     }
-    auto ts = terminalIndices<false>();
+    auto ts = targetTerminalIndices();
     auto contains = [&ss](auto i) {
       return std::find(ss.begin(), ss.end(), i.src) != ss.end();
     };
