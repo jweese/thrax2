@@ -56,8 +56,10 @@ struct PhrasalRule {
   }
 
   Alignment alignment() const {
-    Alignment result(sentence.alignment);
     auto ss = terminalIndices<true>();
+    if (ss.empty()) {
+      return {};
+    }
     auto ts = terminalIndices<false>();
     auto contains = [&ss](auto i) {
       return std::find(ss.begin(), ss.end(), i.src) != ss.end();
@@ -66,6 +68,7 @@ struct PhrasalRule {
       auto it = std::find(is.begin(), is.end(), i);
       return static_cast<IndexType>(it - is.begin());
     };
+    Alignment result(sentence.alignment);
     auto it = std::remove_if(
         result.begin(), result.end(), std::not_fn(contains));
     result.erase(it, result.end());
