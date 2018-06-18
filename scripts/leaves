@@ -1,0 +1,10 @@
+#!/usr/bin/perl -w
+use strict;
+
+while (<>) {
+  chomp;
+  s/\)//g;
+  my @toks = split;
+  my $line = join(" ", grep { !/\(/ } @toks);
+  print "$line\n";
+}
