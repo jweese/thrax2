@@ -1,0 +1,3 @@
+#!/usr/bin/awk -f
+!nts[$1]++ { count++; }
+END { print count; }
