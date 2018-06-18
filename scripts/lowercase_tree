@@ -1,0 +1,9 @@
+#!/usr/bin/perl -w
+use strict;
+
+while (<>) {
+  chomp;
+  my @toks = split;
+  my $line = join(" ", map { /\(/ ? $_ : lc } @toks);
+  print "$line\n";
+}
