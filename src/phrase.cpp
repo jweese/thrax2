@@ -58,4 +58,24 @@ std::vector<SpanPair> minimalConsistentPairs(const Alignment& a, int maxSize) {
   return result;
 }
 
+std::vector<SpanPair> expandTargetSides(
+    const Alignment& a, SpanPair nt, IndexType maxTargetIndex) {
+  if (a.empty()) {
+    return {};
+  }
+  // precondition: alignment sorted by target
+  auto aligned = [&a](PointType i) {
+    auto it = std::lower_bound(a.begin(), a.end(), Point{ 0, i }, byTarget);
+    return it != a.end() && it->tgt == i;
+  };
+  std::vector<SpanPair> result;
+  for (auto i = nt.tgt.start - 1; i >= 0 && !aligned(i); i--) {
+    for (auto j = nt.tgt.end; j <= maxTargetIndex && !aligned(j); j++) {
+      result.push_back(
+          SpanPair{ nt.src, Span{ static_cast<IndexType>(i), j } });
+    }
+  }
+  return result;
+}
+
 }
