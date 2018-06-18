@@ -2,7 +2,8 @@
 use strict;
 
 my $max = shift;
+my $check = $max + 1;
 
 while (<>) {
-  print unless grep { $1 > $max } (/,(\d+)\]/g); 
+  print unless /,$check\]/;
 }
