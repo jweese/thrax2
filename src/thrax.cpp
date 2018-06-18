@@ -1,5 +1,6 @@
 #include <future>
 #include <iostream>
+#include <memory>
 #include <mutex>
 #include <sstream>
 #include <vector>
@@ -13,6 +14,12 @@ namespace {
 
 std::mutex inputLock, outputLock;
 
+enum class GrammarType {
+  Hiero,
+  SAMT,
+};
+
+template<GrammarType Grammar = GrammarType::Hiero>
 bool process() {
   std::string line;
   {
@@ -23,11 +30,15 @@ bool process() {
   }
   try {
     auto asp = jhu::thrax::readAlignedSentencePair<false, true>(line);
-    auto tree = jhu::thrax::readTree(jhu::thrax::fields(line)[1]);
-    jhu::thrax::SAMTLabeler samt{std::move(tree)};
+    std::unique_ptr<jhu::thrax::Labeler> label =
+        std::make_unique<jhu::thrax::HieroLabeler>();
+    if constexpr (Grammar == GrammarType::SAMT) {
+      auto tree = jhu::thrax::readTree(jhu::thrax::fields(line)[1]);
+      label = std::make_unique<jhu::thrax::SAMTLabeler>(std::move(tree));
+    }
     std::ostringstream out;
     for (const auto& rule : jhu::thrax::extract(asp, 10)) {
-      out << jhu::thrax::LabeledRuleView{ rule, samt } << '\n';
+      out << jhu::thrax::LabeledRuleView{ rule, *label } << '\n';
     }
     std::lock_guard g(outputLock);
     std::cout << out.str();
@@ -44,7 +55,7 @@ int main(int argc, char** argv) {
   if (argc > 1) {
     threads = std::atoi(argv[1]);
   }
-  std::ios::sync_with_stdio(false);
+  // std::ios::sync_with_stdio(false);
   if (threads < 2) {
     while (process()) {}
     return 0;
@@ -53,8 +64,5 @@ int main(int argc, char** argv) {
   workers.reserve(threads);
   for (int i = 0; i < threads; i++) {
     workers.push_back(std::async([]() { while (process()) {} }));
-  }
-  for (auto& f : workers) {
-    f.get();
   }
 }
