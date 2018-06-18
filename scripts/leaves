@@ -4,7 +4,6 @@ use strict;
 while (<>) {
   chomp;
   s/\)//g;
-  my @toks = split;
-  my $line = join(" ", grep { !/\(/ } @toks);
+  my $line = join(" ", grep { !/\(/ } split);
   print "$line\n";
 }
