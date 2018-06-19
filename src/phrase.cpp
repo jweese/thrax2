@@ -45,7 +45,8 @@ std::vector<SpanPair> minimalConsistentPairs(const Alignment& a, int maxSize) {
       } else if (src.size() > maxSize) {
         break;
       }
-      if (auto tgt = minimalTargetSpan(a, src); tgt.has_value()) {
+      if (auto tgt = minimalTargetSpan(a, src);
+          tgt.has_value() && tgt->size() <= maxSize) {
         result.push_back(SpanPair{ src, *tgt });
       }
     }

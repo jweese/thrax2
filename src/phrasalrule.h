@@ -128,7 +128,8 @@ inline void printRhs(std::ostream& out, LabeledRuleView v) {
         out << s.tgt[i];
       }
     } else if (i == nt->template get<SourceSide>().end - 1) {
-      if (i != indices.front()) {
+      if (i != indices.front()
+          && nt->template get<SourceSide>().start != indices.front()) {
         out << ' ';
       }
       bracket(out, labeler(*nt), rule.ntIndex(*nt));
