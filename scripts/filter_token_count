@@ -1,7 +1,8 @@
 #!/usr/bin/perl -w
 use strict;
 
-my $max = shift;
+my $nonlexMax = shift;
+my $lexicalMax = shift;
 
 sub token_count {
   my $_ = shift;
@@ -10,5 +11,11 @@ sub token_count {
 
 while (<>) {
   my (undef, $src, $tgt, undef) = split /\t/, $_, 4;
-  print if (token_count($src) <= $max and token_count($tgt) <= $max);
+  my $lexical = ($src !~ /,1\]/);
+  if ($lexical) {
+    print if
+      (token_count($src) <= $lexicalMax and token_count($tgt) <= $lexicalMax);
+  } else {
+    print if (token_count($src) <= $nonlexMax);
+  }
 }
