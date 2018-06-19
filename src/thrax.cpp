@@ -60,9 +60,8 @@ int main(int argc, char** argv) {
     while (process()) {}
     return 0;
   }
-  std::vector<std::future<void>> workers;
-  workers.reserve(threads);
-  for (int i = 0; i < threads; i++) {
-    workers.push_back(std::async([]() { while (process()) {} }));
+  std::vector<std::future<void>> workers(threads);
+  for (auto& t : workers) {
+    t = std::async([]() { while (process<GrammarType::SAMT>()) {} });
   }
 }
