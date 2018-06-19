@@ -1,4 +1,5 @@
 #include "phrase.h"
+#include "sentence.h"
 #include "gtest/gtest.h"
 
 namespace jhu::thrax {
@@ -114,13 +115,9 @@ TEST(PhraseTests, AllPairs) {
 }
 
 TEST(PhraseTests, LoosePhrases) {
-  auto a = readAlignment("1-1");
-  auto ps = expandTargetSides(a, SpanPair{ { 1, 2 }, { 1, 2 }}, 3);
-  ASSERT_EQ(2, ps.size());
-  SpanPair p1{ { 1, 2}, {0, 2} };
-  SpanPair p2{ { 1, 2}, {0, 3} };
-  EXPECT_EQ(ps.front(), p1);
-  EXPECT_EQ(ps.back(), p2);
+  auto asp = readAlignedSentencePair<false, false>("a b c\td e f\t1-1");
+  auto ps = allConsistentPairs(asp, 10);
+  ASSERT_EQ(16, ps.size());
 }
 
 }

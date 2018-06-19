@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include "sentence.h"
+
 namespace jhu::thrax {
 
 std::optional<Span> minimalTargetSpan(const Alignment& a, Span src) {
@@ -59,22 +61,52 @@ std::vector<SpanPair> minimalConsistentPairs(const Alignment& a, int maxSize) {
   return result;
 }
 
-std::vector<SpanPair> expandTargetSides(
-    const Alignment& a, SpanPair nt, IndexType maxTargetIndex) {
-  if (a.empty()) {
-    return {};
+namespace {
+
+auto expand(const AlignedSentencePair& sentence, SpanPair sp, int maxSize) {
+  const auto& a = sentence.alignment;
+  auto sent = sentence.span();
+  SpanPair s(sp);
+  while (sent.contains(s) && isConsistent(a, s)) {
+    s.src.start--;
   }
-  // precondition: alignment sorted by target
-  auto aligned = [&a](PointType i) {
-    auto it = std::lower_bound(a.begin(), a.end(), Point{ 0, i }, byTarget);
-    return it != a.end() && it->tgt == i;
-  };
+  s.src.start++;
+  while (sent.contains(s) && isConsistent(a, s)) {
+    s.src.end++;
+  }
+  s.src.end--;
+  while (sent.contains(s) && isConsistent(a, s)) {
+    s.tgt.start--;
+  }
+  s.tgt.start++;
+  while (sent.contains(s) && isConsistent(a, s)) {
+    s.tgt.end++;
+  }
+  s.tgt.end--;
   std::vector<SpanPair> result;
-  for (auto i = nt.tgt.start - 1; i >= 0 && !aligned(i); i--) {
-    for (auto j = nt.tgt.end; j <= maxTargetIndex && !aligned(j); j++) {
-      result.push_back(
-          SpanPair{ nt.src, Span{ static_cast<IndexType>(i), j } });
+  for (auto i = s.src.start; i <= sp.src.start; i++) {
+    for (auto j = sp.src.end; j <= s.src.end; j++) {
+      for (auto x = s.tgt.start; x <= sp.tgt.start; x++) {
+        for (auto y = sp.tgt.end; y <= s.tgt.end; y++) {
+          auto res = SpanPair{ { i, j }, { x, y } };
+          if (res.src.size() <= maxSize && res.tgt.size() <= maxSize) {
+            result.push_back(res);
+          }
+        }
+      }
     }
+  }
+  return result;
+}
+
+}  // namespace
+
+std::vector<SpanPair> allConsistentPairs(
+    const AlignedSentencePair& sentence, int maxSize) {
+  std::vector<SpanPair> result;
+  for (auto sp : minimalConsistentPairs(sentence.alignment, maxSize)) {
+    auto es = expand(sentence, sp, maxSize);
+    result.insert(result.end(), es.begin(), es.end());
   }
   return result;
 }

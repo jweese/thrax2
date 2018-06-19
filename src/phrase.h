@@ -99,6 +99,8 @@ inline std::ostream& operator<<(std::ostream& out, SpanPair sp) {
 std::optional<Span> minimalTargetSpan(const Alignment& a, Span src);
 bool isConsistent(const Alignment& a, SpanPair sp);
 std::vector<SpanPair> minimalConsistentPairs(const Alignment& a, int maxSize);
-std::vector<SpanPair> expandTargetSides(
-    const Alignment& a, SpanPair nt, IndexType maxTargetIndex);
+
+struct AlignedSentencePair;
+std::vector<SpanPair> allConsistentPairs(
+    const AlignedSentencePair& sentence, int maxSize);
 }
