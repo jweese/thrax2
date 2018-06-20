@@ -1,5 +1,2 @@
-#!/usr/bin/awk -f
-BEGIN {
-  FS="\t";
-}
-$2 !~ /\] \[/
+#!/bin/bash
+exec perl -F"\t" -ane 'print unless $F[1] =~ /,\d+\] \[\S+,/'
