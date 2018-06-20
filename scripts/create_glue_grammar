@@ -1,0 +1,15 @@
+#!/usr/bin/awk -f
+BEGIN { goal = "GOAL"; }
+{
+  nts[substr($1, 2, length($1) - 2)] = 1;
+}
+END {
+  printf("[%s] ||| <s> ||| <s> ||| 0\n", goal);
+  printf("[%s] ||| [%s,1] </s> ||| [%s,1] </s> ||| 0\n", goal, goal, goal);
+  for (nt in nts) {
+    printf("[%s] ||| [%s,1] [%s,2] ||| [%s,1] [%s,2] ||| -1\n",
+        goal, goal, nt, goal, nt);
+    printf("[%s] ||| <s> [%s,1] </s> ||| <s> [%s,1] </s> ||| 0\n",
+        goal, nt, nt);
+  }
+}
