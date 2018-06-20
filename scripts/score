@@ -8,51 +8,91 @@ my %rule_count;
 my %source_count;
 my %target_count;
 
-my $word_file = shift;
-open my $words, "<$word_file" or die "$!";
-while (<$words>) {
-  chomp;
-  my ($s,$t,$c) = split /\t/;
-  $word_count{"$s\t$t"} += $c;
-  $source_word_count{$s} += $c;
-  $target_word_count{$t} += $c;
-}
-close $words;
-
 while (<>) {
   chomp;
-  my ($lhs,$src,$tgt,undef) = split /\t/, $_, 4;
+  my ($lhs,$src,$tgt,$alignment,undef) = split /\t/, $_, 5;
   $rule_count{$_}++;
   $source_count{$src}++;
   $target_count{$tgt}++;
-}
 
-sub lexprob {
-  my ($s, $t, $source_given_target) = @_;
-  my $count = $word_count{"$s\t$t"};
-  my $marginal =
-      $source_given_target ? $target_word_count{$t} : $source_word_count{$s};
-  return 1 unless (defined $count and defined $marginal);
-  $count / $marginal;
-}
-
-sub lexprob_source_given_target {
-  my ($stok, $ttok, $alignment) = @_;
-  my $p = 1;
-  my @as = split " ", $alignment;
-  for (my $i = 0; $i < @$stok; $i++) {
-    my @ts = grep /^$i-/, @as;
-    next unless @ts;
-    map s/\d+-//, @ts;
-    my $term = 0;
-    $term += lexprob($$stok[$i], $$ttok[$_], 1) foreach (@ts);
-    $p *= $term;
+  my @ss = terminals($src);
+  my @ts = terminals($tgt);
+  foreach (word_pairs(\@ss, \@ts, $alignment)) {
+    my ($s, $t) = split /\t/;
+    $word_count{$_}++;
+    $source_word_count{$s}++;
+    $target_word_count{$t}++;
   }
-  log($p);
+  foreach (word_pairs(\@ts, \@ss, flip($alignment))) {
+    my ($t, $s) = split /\t/;
+    $word_count{"$s\t$t"}++;
+    $source_word_count{$s}++;
+    $target_word_count{$t}++;
+  }
 }
 
 sub terminals {
-  grep { !/^\[/ } split " ", $_[0];
+  my $rhs = shift;
+  grep { !/,\d+\]$/ } split " ", $rhs;
+}
+
+sub flip {
+  my $a = shift;
+  $a =~ s/(\d+)-(\d+)/$2-$1/g;
+}
+
+sub word_pairs {
+  my ($from, $to, $alignment) = @_;
+  my @fs = @$from;
+  my @ts = @$to;
+  my %seen;
+  my @result;
+  while ($alignment =~ /(\d+)-(\d+)/g) {
+    push @result, "$fs[$1]\t$ts[$2]";
+    $seen{"$1-"} = undef;
+    $seen{"-$2"} = undef;
+  }
+  for (my $i = 0; $i < @fs; $i++) {
+    push @result, "$fs[$i]\t" unless exists $seen{"$i-"};
+  }
+  for (my $i = 0; $i < @ts; $i++) {
+    push @result, "\t$ts[$i]" unless exists $seen{"-$i"};
+  }
+  return @result;
+}
+
+sub word_lexprobs {
+  my ($s, $t) = @_;
+  my $joint = $word_count{"$s\t$t"};
+  my $sc = $source_word_count{$s};
+  my $tc = $target_word_count{$t};
+  return ( $joint / $tc, $joint / $sc);
+}
+
+sub lexprob {
+  my ($src, $tgt, $alignment) = @_;
+  my @ss = terminals $src;
+  my @ts = terminals $tgt;
+  my %terms;
+  while ($alignment =~ /(\d+)-(\d+)/g) {
+    my ($ps, $pt) = word_lexprobs($ss[$1], $ts[$2]);
+    $terms{"$1-"} += $pt;
+    $terms{"-$2"} += $pt;
+    $terms{"count$1-"}++;
+    $terms{"count-$2"}++;
+  }
+  my $s = 1;
+  my $t = 1;
+  foreach (keys %terms) {
+    next if /^c/;  # count
+    my $avg = $terms{$_} / $terms{"count$_"};
+    if (/-$/) {
+      $s *= $avg;
+    } else {
+      $t *= $avg;
+    }
+  }
+  return (log($s), log($t));
 }
 
 foreach (keys %rule_count) {
@@ -61,8 +101,7 @@ foreach (keys %rule_count) {
   my $t_given_s = log($rule_count{$_} / $source_count{$src});
   my $s_given_t = log($rule_count{$_} / $target_count{$tgt});
   print "p(e|f)=$t_given_s p(f|e)=$s_given_t";
-  my $s_given_t_lex = lexprob_source_given_target(
-      [terminals $src], [terminals $tgt], $alignment);
-  print " p_lex(f|e)=$s_given_t_lex";
+  ($s_given_t, $t_given_s) = lexprob($src, $tgt, $alignment);
+  print " lex(e|f)=$t_given_s lex(f|e)=$s_given_t";
   print "\n";
 }
