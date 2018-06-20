@@ -10,4 +10,5 @@ exec "$THRAX"/hiero "$parallelism" \
   | "$SCRIPTS"/filter_nt_count 2 \
   | "$SCRIPTS"/filter_adjacent_nts \
   | "$SCRIPTS"/filter_token_count 5 10 \
-  | "$SCRIPTS"/score
+  | "$SCRIPTS"/score \
+  | "$SCRIPTS"/score_individual
