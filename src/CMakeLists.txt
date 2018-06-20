@@ -5,3 +5,7 @@ target_compile_options(thrax2 PRIVATE -Wall -Wextra -Werror -pedantic)
 
 add_executable(thrax thrax.cpp)
 target_link_libraries(thrax PRIVATE thrax2 Threads::Threads)
+add_executable(hiero hiero.cpp)
+target_link_libraries(hiero PRIVATE thrax2 Threads::Threads)
+add_executable(samt samt.cpp)
+target_link_libraries(samt PRIVATE thrax2 Threads::Threads)
