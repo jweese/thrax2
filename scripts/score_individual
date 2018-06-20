@@ -29,6 +29,20 @@ sub has_adjacent_nts { $_[0] =~ /,\d+\] \[\S+,/; }
 
 sub word_cr { $_[0] == 0 or $_[1] == 0 ? 0 : log($_[1] / $_[0]); }
 
+sub num_aligned {
+  my %points;
+  my ($src, $tgt) = (0, 0);
+  while ($_[0] =~ /(\d+)-(\d+)/g) {
+    $points{"$1-"} = undef;
+    $points{"-$2"} = undef;
+  }
+  foreach (keys %points) {
+    $src++ if /-$/;
+    $tgt++ if /^-/;
+  }
+  return ($src, $tgt);
+}
+
 sub score {
   my $rule = shift;
   my ($lhs,$src,$tgt,$alignment,$count,$rest) = split /\t/, $rule, 6;
