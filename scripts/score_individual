@@ -41,7 +41,7 @@ sub score {
   $result .= " rarity_penalty=" . exp(1 - $count);
   $result .= " lexical=" . (is_purely_lexical($src) ? 1 : 0);
   $result .= " monotonic=" . (is_monotonic($tgt) ? 1 : 0);
-  $result .= " abstract=" . ($sabs and $tabs);
+  $result .= " abstract=" . ($sabs and $tabs ? 1 : 0);
   $result .= " adjacent=" . (has_adjacent_nts($src) ? 1 : 0);
   $result .= " x_rule=" . ($lhs eq "[X]" ? 1 : 0);
   $result .= " glue=0";
