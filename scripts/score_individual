@@ -50,6 +50,7 @@ sub score {
   my @twords = terminals($tgt);
   my $sabs = is_only_nts $src;
   my $tabs = is_only_nts $tgt;
+  my ($saligned, $taligned) = num_aligned($alignment);
 
   my $result = "phrase_penalty=1";
   $result .= " rarity_penalty=" . exp(1 - $count);
@@ -68,6 +69,8 @@ sub score {
           . (@swords > 0 and @twords == 0 ? 1 : 0);
   $result .= " target_without_source=="
           . (@twords > 0 and @swords == 0 ? 1 : 0);
+  $result .= " unaligned_source=" . (@swords - $saligned);
+  $result .= " unaligned_target=" . (@twords - $taligned);
   return $result;
 }
 
