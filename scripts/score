@@ -97,14 +97,12 @@ sub lexprob {
 
 foreach (keys %rule_count) {
   next unless $rule_count{$_} > 1;
-  print "$_\t";
+  print "$_\t$rule_count{$_}\t";
   my (undef,$src,$tgt,$alignment,undef) = split /\t/, $_, 5;
   my $t_given_s = log($rule_count{$_} / $source_count{$src});
   my $s_given_t = log($rule_count{$_} / $target_count{$tgt});
   print "p(e|f)=$t_given_s p(f|e)=$s_given_t";
   ($s_given_t, $t_given_s) = lexprob($src, $tgt, $alignment);
   print " lex(e|f)=$t_given_s lex(f|e)=$s_given_t";
-  print " phrase_penalty=1";
-  print " rarity=" . exp(1 - $rule_count{$_});
   print "\n";
 }
