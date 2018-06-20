@@ -50,6 +50,10 @@ sub score {
   $result .= " word_count_diff=" . (scalar(@twords) - scalar(@swords));
   $result .= " word_cr=" . word_cr(scalar(@swords), scalar(@twords));
   $result .= " identity=" . ($src eq $tgt ? 1 : 0);
+  $result .= " source_without_target=="
+          . (@swords > 0 and @twords == 0 ? 1 : 0);
+  $result .= " target_without_source=="
+          . (@twords > 0 and @swords == 0 ? 1 : 0);
   return $result;
 }
 
