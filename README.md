@@ -9,11 +9,13 @@ This is intended to replace `jweese/thrax`.[1]
 
 Note: `thrax2` requires a C++17-compliant compiler.
 
+First, in your build directory, use `ccmake` or an environment variable to set `CMAKE_BUILD_TYPE=Release`. Then generate makefile with `cmake`, then type `make`.
+
 ### Running
 
-`thrax2 --config configfile --threads N <corpus | sort | uniq -c`
-* see `examples/` for configuration files;
-* see `scripts/` for support scripts to calculate feature scores.
+The binaries `src/{hiero,samt}` generate Hiero and SAMT grammars, respectively. They will read an aligned parallel corpus from stdin and produce rules on stdout. The rules are not unique. Typically we use the many `scripts/filter_*` scripts to reduce the rules of interest. The stream of rules should then be piped to `scripts/score` to produce feature scores for a unique set of rules.
+
+* `scripts/default_{hiero,samt}` will run extraction, filtering, and scoring for the typical Hiero or SAMT setup. Those scripts are easy to modify for your purposes.
 
 ### Motivation
 
