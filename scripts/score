@@ -1,9 +1,23 @@
 #!/usr/bin/perl -w
 use strict;
 
+my %word_count;
+my %source_word_count;
+my %target_word_count;
 my %rule_count;
 my %source_count;
 my %target_count;
+
+my $word_file = shift;
+open my $words, "<$word_file" or die "$!";
+while (<$words>) {
+  chomp;
+  my ($s,$t,$c) = split /\t/;
+  $word_count{"$s\t$t"} += $c;
+  $source_word_count{$s} += $c;
+  $target_word_count{$t} += $c;
+}
+close $words;
 
 while (<>) {
   chomp;
