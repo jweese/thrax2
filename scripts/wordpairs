@@ -4,30 +4,27 @@ use strict;
 # input: source \t target \t alignment
 # output: s \t t for each aligned word pair
 #         s \t "" for unaligned source words
+#         "" \t t for unaligned target words
 
-sub alignment {
-  my %points;
-  foreach (/\d+-\d+/g) {
-    my ($s, $t) = split "-";
-    push @{$points{$s}}, $t;
-  }
-  return %points;
-}
+my %counts;
 
 while (<>) {
   chomp;
-  my ($src, $tgt, $al) = split /\t/;
-  my @ss = split " ", $src;
-  my @ts = split " ", $tgt;
-  my %a = alignment $al;
-  for (my $i = 0; $i < @ss; $i++) {
-    my $s = $ss[$i];
-    if (defined $a{$i}) {
-      foreach my $j (@{$a{$i}}) {
-        print "$s\t$ts[$j]\n";
-      }
-    } else {
-      print "$s\t\n";
-    }
+  # get leaves if there are parse trees
+  s/\)//g;
+  s/\(\S+\s*//g;
+  my ($src,$tgt,$alignment) = split /\t/;
+  my @stok = split " ", $src;
+  my @ttok = split " ", $tgt;
+  for (my $i = 0; $i < @stok; $i++) {
+    $counts{"$stok[$i]\t"}++ unless ($alignment =~ /(?:^|\s+)$i-/);
+  }
+  for (my $i = 0; $i < @ttok; $i++) {
+    $counts{"\t$ttok[$i]"}++ unless ($alignment =~ /-$i(?:$|\s+)/);
+  }
+  while ($alignment =~ /(\d+)-(\d+)/g) {
+    $counts{"$stok[$1]\t$ttok[$2]"}++ if ($1 < @stok and $2 < @ttok);
   }
 }
+
+print "$_\t$counts{$_}\n" foreach (keys %counts);
