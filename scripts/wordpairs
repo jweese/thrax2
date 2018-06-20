@@ -10,9 +10,6 @@ my %counts;
 
 while (<>) {
   chomp;
-  # get leaves if there are parse trees
-  s/\)//g;
-  s/\(\S+\s*//g;
   my ($src,$tgt,$alignment) = split /\t/;
   my @stok = split " ", $src;
   my @ttok = split " ", $tgt;
