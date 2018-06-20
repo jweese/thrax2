@@ -96,6 +96,7 @@ sub lexprob {
 }
 
 foreach (keys %rule_count) {
+  next unless $rule_count{$_} > 1;
   print "$_\t";
   my (undef,$src,$tgt,$alignment,undef) = split /\t/, $_, 5;
   my $t_given_s = log($rule_count{$_} / $source_count{$src});
