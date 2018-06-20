@@ -27,7 +27,7 @@ sub is_monotonic {
 
 sub has_adjacent_nts { $_[0] =~ /,\d+\] \[\S+,/; }
 
-sub word_cr { $_[0] == 0 or $_[1] == 0 ? 0 : log($_[1] / $_[0]); }
+sub cr { $_[0] == 0 or $_[1] == 0 ? 0 : log($_[1] / $_[0]); }
 
 sub num_aligned {
   my %points;
@@ -51,6 +51,7 @@ sub score {
   my $sabs = is_only_nts $src;
   my $tabs = is_only_nts $tgt;
   my ($saligned, $taligned) = num_aligned($alignment);
+  my ($schars, $tchars) = (length $src, length $tgt);
 
   my $result = "phrase_penalty=1";
   $result .= " rarity_penalty=" . exp(1 - $count);
@@ -63,7 +64,7 @@ sub score {
   $result .= " source_word_count=" . scalar(@swords);
   $result .= " target_word_count=" . scalar(@twords);
   $result .= " word_count_diff=" . (scalar(@twords) - scalar(@swords));
-  $result .= " word_cr=" . word_cr(scalar(@swords), scalar(@twords));
+  $result .= " word_cr=" . cr(scalar(@swords), scalar(@twords));
   $result .= " identity=" . ($src eq $tgt ? 1 : 0);
   $result .= " source_without_target=="
           . (@swords > 0 and @twords == 0 ? 1 : 0);
@@ -71,6 +72,8 @@ sub score {
           . (@twords > 0 and @swords == 0 ? 1 : 0);
   $result .= " unaligned_source=" . (@swords - $saligned);
   $result .= " unaligned_target=" . (@twords - $taligned);
+  $result .= " char_count_diff=" . ($tchars - $schars);
+  $result .= " char_cr=" . cr($schars, $tchars);
   return $result;
 }
 
