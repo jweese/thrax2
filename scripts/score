@@ -1,0 +1,22 @@
+#!/usr/bin/perl -w
+use strict;
+
+my %rule_count;
+my %source_count;
+my %target_count;
+
+while (<>) {
+  chomp;
+  my ($lhs,$src,$tgt,undef) = split /\t/, $_, 4;
+  $rule_count{$_}++;
+  $source_count{$src}++;
+  $target_count{$tgt}++;
+}
+
+foreach (keys %rule_count) {
+  print "$_\t";
+  my (undef,$src,$tgt,undef) = split /\t/, $_, 4;
+  my $t_given_s = log($rule_count{$_} / $source_count{$src});
+  my $s_given_t = log($rule_count{$_} / $target_count{$tgt});
+  print "p(e|f)=$t_given_s p(f|e)=$s_given_t\n";
+}
