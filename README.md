@@ -5,11 +5,9 @@ This is intended to replace `jweese/thrax`.[1]
 
 ### Building
 
-`mkdir build && cd build && cmake .. && make`
+First, in your build directory, use `ccmake` or an environment variable to set `CMAKE_BUILD_TYPE=Release`. Then generate makefile with `cmake`, then type `make`.
 
 Note: `thrax2` requires a C++17-compliant compiler.
-
-First, in your build directory, use `ccmake` or an environment variable to set `CMAKE_BUILD_TYPE=Release`. Then generate makefile with `cmake`, then type `make`.
 
 ### Running
 
