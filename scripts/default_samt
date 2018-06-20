@@ -1,0 +1,13 @@
+#!/bin/bash
+parallelism=$1
+if [[ -z "$parallelism" ]]; then
+  printf "usage: default_samt <parallelism> <corpus >grammar\n" >&2
+  exit 1
+fi
+
+exec "$THRAX"/samt "$parallelism" \
+  | "$SCRIPTS"/filter_no_alignment \
+  | "$SCRIPTS"/filter_nonlexical_x \
+  | "$SCRIPTS"/filter_nt_count 2 \
+  | "$SCRIPTS"/filter_token_count 5 10 \
+  | "$SCRIPTS"/score

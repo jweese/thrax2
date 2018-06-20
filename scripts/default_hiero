@@ -1,0 +1,13 @@
+#!/bin/bash
+parallelism=$1
+if [[ -z "$parallelism" ]]; then
+  printf "usage: default_hiero <parallelism> <corpus >grammar\n" >&2
+  exit 1
+fi
+
+exec "$THRAX"/hiero "$parallelism" \
+  | "$SCRIPTS"/filter_no_alignment \
+  | "$SCRIPTS"/filter_nt_count 2 \
+  | "$SCRIPTS"/filter_adjacent_nts \
+  | "$SCRIPTS"/filter_token_count 5 10 \
+  | "$SCRIPTS"/score
