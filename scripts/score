@@ -105,5 +105,6 @@ foreach (keys %rule_count) {
   ($s_given_t, $t_given_s) = lexprob($src, $tgt, $alignment);
   print " lex(e|f)=$t_given_s lex(f|e)=$s_given_t";
   print " phrase_penalty=1";
+  print " rarity=" . exp(1 - $rule_count{$_});
   print "\n";
 }
