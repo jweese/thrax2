@@ -9,7 +9,8 @@ int main() {
   jhu::thrax::HieroLabeler hiero{};
   while (std::getline(std::cin, line)) {
     auto asp = jhu::thrax::readAlignedSentencePair<false, false>(line);
-    for (const auto& rule : jhu::thrax::extract(asp, 10)) {
+    auto initial = jhu::thrax::minimalConsistentPairs(asp.alignment, 10);
+    for (const auto& rule : jhu::thrax::extract(asp, initial)) {
       std::cout << jhu::thrax::LabeledRuleView{ rule, hiero } << '\n';
     }
   }

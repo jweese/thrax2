@@ -62,8 +62,7 @@ std::vector<T> cat(std::array<std::vector<T>, N>&& vals) {
 }
 
 std::vector<PhrasalRule> extract(
-    const AlignedSentencePair& sentence, int initialPhraseSize) {
-  auto initial = minimalConsistentPairs(sentence.alignment, initialPhraseSize);
+    const AlignedSentencePair& sentence, const std::vector<SpanPair>& initial) {
   std::array<Rules, kMaxNonterminals + 1> rules;
   rules.front().reserve(initial.size());
   for (auto p : initial) {

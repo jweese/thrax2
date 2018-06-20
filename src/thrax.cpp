@@ -30,6 +30,7 @@ bool process() {
   }
   try {
     auto asp = jhu::thrax::readAlignedSentencePair<false, true>(line);
+    auto initial = jhu::thrax::minimalConsistentPairs(asp.alignment, 10);
     std::unique_ptr<jhu::thrax::Labeler> label =
         std::make_unique<jhu::thrax::HieroLabeler>();
     if constexpr (Grammar == GrammarType::SAMT) {
@@ -37,7 +38,7 @@ bool process() {
       label = std::make_unique<jhu::thrax::SAMTLabeler>(std::move(tree));
     }
     std::ostringstream out;
-    for (const auto& rule : jhu::thrax::extract(asp, 10)) {
+    for (const auto& rule : jhu::thrax::extract(asp, initial)) {
       out << jhu::thrax::LabeledRuleView{ rule, *label } << '\n';
     }
     std::lock_guard g(outputLock);

@@ -11,8 +11,9 @@ int main() {
     try {
       auto asp = jhu::thrax::readAlignedSentencePair<false, true>(line);
       auto tree = jhu::thrax::readTree(jhu::thrax::fields(line)[1]);
+      auto initial = jhu::thrax::allConsistentPairs(asp, 12);
       jhu::thrax::SAMTLabeler samt{std::move(tree)};
-      for (const auto& rule : jhu::thrax::extract(asp, 10)) {
+      for (const auto& rule : jhu::thrax::extract(asp, initial)) {
         std::cout << jhu::thrax::LabeledRuleView{ rule, samt } << '\n';
       }
     } catch (std::exception& e) {
