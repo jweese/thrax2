@@ -45,7 +45,7 @@ sub num_aligned {
 
 sub score {
   my $rule = shift;
-  my ($lhs,$src,$tgt,$alignment,$count,$rest) = split /\t/, $rule, 6;
+  my ($lhs,$src,$tgt,$alignment,$count) = split /\t/, $rule;
   my @swords = terminals($src);
   my @twords = terminals($tgt);
   my $sabs = is_only_nts $src;

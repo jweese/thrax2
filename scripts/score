@@ -10,7 +10,7 @@ my %target_count;
 
 while (<>) {
   chomp;
-  my ($lhs,$src,$tgt,$alignment,undef) = split /\t/, $_, 5;
+  my ($lhs,$src,$tgt,$alignment) = split /\t/;
   $rule_count{$_}++;
   $source_count{$src}++;
   $target_count{$tgt}++;
@@ -97,7 +97,7 @@ sub lexprob {
 foreach (keys %rule_count) {
   next unless $rule_count{$_} > 1;
   print "$_\t$rule_count{$_}\t";
-  my (undef,$src,$tgt,$alignment,undef) = split /\t/, $_, 5;
+  my (undef,$src,$tgt,$alignment) = split /\t/;
   my $t_given_s = log($rule_count{$_} / $source_count{$src});
   my $s_given_t = log($rule_count{$_} / $target_count{$tgt});
   print "p(e|f)=$t_given_s p(f|e)=$s_given_t";
