@@ -2,5 +2,5 @@
 use strict;
 
 while (<>) {
-  print unless grep /\+.*\+/, /\[.+?,/g;
+  print unless /\[\S*?\+\S*?\+\S*?\]/;
 }
