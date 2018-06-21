@@ -6,11 +6,11 @@ my $lexicalMax = shift;
 
 sub token_count {
   my $_ = shift;
-  (() = m/ /g) + 1;
+  split;
 }
 
 while (<>) {
-  my (undef, $src, $tgt, undef) = split /\t/, $_, 4;
+  my (undef, $src, $tgt) = split /\t/;
   my $lexical = ($src !~ /,1\]/);
   if ($lexical) {
     print if
