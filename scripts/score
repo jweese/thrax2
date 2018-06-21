@@ -32,20 +32,18 @@ sub terminals {
 
 sub word_pairs {
   my ($from, $to, $alignment) = @_;
-  my @fs = @$from;
-  my @ts = @$to;
   my %seen;
   my @result;
   while ($alignment =~ /(\d+)-(\d+)/g) {
-    push @result, "$fs[$1]\t$ts[$2]";
+    push @result, "$$from[$1]\t$$to[$2]";
     $seen{"$1-"} = undef;
     $seen{"-$2"} = undef;
   }
-  for (my $i = 0; $i < @fs; $i++) {
-    push @result, "$fs[$i]\t" unless exists $seen{"$i-"};
+  for (my $i = 0; $i < @$from; $i++) {
+    push @result, "$$from[$i]\t" unless exists $seen{"$i-"};
   }
-  for (my $i = 0; $i < @ts; $i++) {
-    push @result, "\t$ts[$i]" unless exists $seen{"-$i"};
+  for (my $i = 0; $i < @$to; $i++) {
+    push @result, "\t$$to[$i]" unless exists $seen{"-$i"};
   }
   return @result;
 }
