@@ -7,6 +7,8 @@ my %target_word_count;
 my %rule_count;
 my %source_count;
 my %target_count;
+my %source_terminals;
+my %target_terminals;
 
 while (<>) {
   chomp;
@@ -27,6 +29,8 @@ foreach (keys %rule_count) {
     $source_word_count{$s} += $count;
     $target_word_count{$t} += $count;
   }
+  $source_terminals{$src} = \@ss;
+  $target_terminals{$tgt} = \@ts;
 }
 
 sub terminals {
@@ -62,11 +66,11 @@ sub word_lexprobs {
 
 sub lexprob {
   my ($src, $tgt, $alignment) = @_;
-  my @ss = terminals $src;
-  my @ts = terminals $tgt;
+  my $ss = $source_terminals{$src};
+  my $ts = $target_terminals{$tgt};
   my %terms;
   while ($alignment =~ /(\d+)-(\d+)/g) {
-    my ($ps, $pt) = word_lexprobs($ss[$1], $ts[$2]);
+    my ($ps, $pt) = word_lexprobs($$ss[$1], $$ts[$2]);
     $terms{"$1-"} += $pt;
     $terms{"-$2"} += $pt;
     $terms{"count$1-"}++;
@@ -83,15 +87,15 @@ sub lexprob {
       $t *= $avg;
     }
   }
-  for (my $i = 0; $i < @ss; $i++) {
+  for (my $i = 0; $i < @$ss; $i++) {
     unless (exists $terms{"$i-"}) {
-      my ($unaligned, undef) = word_lexprobs($ss[$i], "");
+      my ($unaligned, undef) = word_lexprobs($$ss[$i], "");
       $s *= $unaligned;
     }
   }
-  for (my $i = 0; $i < @ts; $i++) {
+  for (my $i = 0; $i < @$ts; $i++) {
     unless (exists $terms{"$i-"}) {
-      my (undef, $unaligned) = word_lexprobs("", $ts[$i]);
+      my (undef, $unaligned) = word_lexprobs("", $$ts[$i]);
       $t *= $unaligned;
     }
   }
