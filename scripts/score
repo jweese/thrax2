@@ -23,22 +23,11 @@ while (<>) {
     $source_word_count{$s}++;
     $target_word_count{$t}++;
   }
-  foreach (word_pairs(\@ts, \@ss, flip($alignment))) {
-    my ($t, $s) = split /\t/;
-    $word_count{"$s\t$t"}++;
-    $source_word_count{$s}++;
-    $target_word_count{$t}++;
-  }
 }
 
 sub terminals {
   my $rhs = shift;
   grep { !/,\d+\]$/ } split " ", $rhs;
-}
-
-sub flip {
-  my $a = shift;
-  $a =~ s/(\d+)-(\d+)/$2-$1/g;
 }
 
 sub word_pairs {
@@ -63,9 +52,9 @@ sub word_pairs {
 
 sub word_lexprobs {
   my ($s, $t) = @_;
-  my $joint = $word_count{"$s\t$t"};
-  my $sc = $source_word_count{$s};
-  my $tc = $target_word_count{$t};
+  my $joint = $word_count{"$s\t$t"} // 1;
+  my $sc = $source_word_count{$s} // 1;
+  my $tc = $target_word_count{$t} // 1;
   return ( $joint / $tc, $joint / $sc);
 }
 
