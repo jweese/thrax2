@@ -10,18 +10,22 @@ my %target_count;
 
 while (<>) {
   chomp;
-  my ($lhs,$src,$tgt,$alignment) = split /\t/;
   $rule_count{$_}++;
-  $source_count{$src}++;
-  $target_count{$tgt}++;
+}
+
+foreach (keys %rule_count) {
+  my $count = $rule_count{$_};
+  my ($lhs,$src,$tgt,$alignment) = split /\t/;
+  $source_count{$src} += $count;
+  $target_count{$tgt} += $count;
 
   my @ss = terminals($src);
   my @ts = terminals($tgt);
   foreach (word_pairs(\@ss, \@ts, $alignment)) {
     my ($s, $t) = split /\t/;
-    $word_count{$_}++;
-    $source_word_count{$s}++;
-    $target_word_count{$t}++;
+    $word_count{$_} += $count;
+    $source_word_count{$s} += $count;
+    $target_word_count{$t} += $count;
   }
 }
 
