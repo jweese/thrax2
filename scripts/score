@@ -92,6 +92,18 @@ sub lexprob {
       $t *= $avg;
     }
   }
+  for (my $i = 0; $i < @ss; $i++) {
+    unless (exists $terms{"$i-"}) {
+      my ($unaligned, undef) = word_lexprobs($ss[$i], "");
+      $s *= $unaligned;
+    }
+  }
+  for (my $i = 0; $i < @ts; $i++) {
+    unless (exists $terms{"$i-"}) {
+      my (undef, $unaligned) = word_lexprobs("", $ts[$i]);
+      $t *= $unaligned;
+    }
+  }
   return (log($s), log($t));
 }
 
