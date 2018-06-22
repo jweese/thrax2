@@ -101,4 +101,10 @@ TEST(LabelTests, SAMTDoubleConcat) {
   EXPECT_EQ("A+B+C", sl(SpanPair{{}, { 1, 4 }}));
 }
 
+TEST(LabelTests, SAMTComma) {
+  auto t = readTree("(ROOT baz (, foo) (B bar) (C qux))");
+  SAMTLabeler sl(std::move(t));
+  EXPECT_EQ("COMMA", sl(SpanPair{{}, { 1, 2 }}));
+}
+
 }
