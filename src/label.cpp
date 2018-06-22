@@ -39,6 +39,10 @@ using SAMTLabel = std::variant<
 
 struct LabelVisitor {
   std::string operator()(Constituent c) const {
+    // ',' is a separator between NT symbol and RHS index.
+    if (c.label == ",") {
+      return "COMMA";
+    }
     return std::string(c.label);
   }
   std::string operator()(ForwardApply fa) const {
