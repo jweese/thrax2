@@ -3,5 +3,5 @@ use strict;
 
 while (<>) {
   my (undef,$src) = split /\t/;
-  print unless $src =~ /^\[\S+,\d\]$/;
+  print unless $src =~ /^\[\S+,1\]$/;
 }
