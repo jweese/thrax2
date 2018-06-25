@@ -1,10 +1,10 @@
-#!/usr/bin/awk -f
-BEGIN {
-  FS = "\t";
-  OFS = " ||| ";
-}
-{
-  gsub(/[^ 0-9=]+=/, "", $6);
-  gsub(/[^ 0-9=]+=/, "", $7);
-  print $1, $2, $3, $6 " " $7;
+#!/usr/bin/perl -w
+use strict;
+
+while (<>) {
+  chomp;
+  my @fields = split /\t/;
+  $fields[5] =~ s/[^ 0-9=]+=//g;
+  $fields[6] =~ s/[^ 0-9=]+=//g;
+  print "$fields[0] ||| $fields[1] ||| $fields[2] ||| $fields[5] $fields[6]\n";
 }
