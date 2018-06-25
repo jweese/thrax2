@@ -7,7 +7,7 @@ fi
 
 exec "$THRAX"/samt "$parallelism" \
   | "$SCRIPTS"/filter_nonlexical_x \
-  | "$SCRIPTS"/filter_unary_source \
+  | "$SCRIPTS"/filter_abstract \
   | "$SCRIPTS"/filter_nt_count 2 \
   | "$SCRIPTS"/filter_token_count 5 10 \
   | "$SCRIPTS"/score \
