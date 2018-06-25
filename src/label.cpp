@@ -47,18 +47,18 @@ struct LabelVisitor {
     return replaceComma(c.label);
   }
   std::string operator()(ForwardApply fa) const {
-    return std::string(fa.result) + "/" + std::string(fa.arg);
+    return replaceComma(fa.result) + "/" + replaceComma(fa.arg);
   }
   std::string operator()(BackwardApply ba) const {
-    return std::string(ba.result) + "\\" + std::string(ba.arg);
+    return replaceComma(ba.result) + "\\" + replaceComma(ba.arg);
   }
   std::string operator()(Concat c) const {
-    return std::string(c.a) + "+" + std::string(c.b);
+    return replaceComma(c.a) + "+" + replaceComma(c.b);
   }
   std::string operator()(DoubleConcat dc) const {
-    return std::string(dc.a)
-        + "+" + std::string(dc.b)
-        + "+" + std::string(dc.c);
+    return replaceComma(dc.a)
+        + "+" + replaceComma(dc.b)
+        + "+" + replaceComma(dc.c);
   }
 };
 

@@ -107,4 +107,33 @@ TEST(LabelTests, SAMTComma) {
   EXPECT_EQ("COMMA", sl(SpanPair{{}, { 1, 2 }}));
 }
 
+TEST(LabelTests, SAMTForwardApplyComma) {
+  auto t = readTree("(ROOT foo (, bar))");
+  SAMTLabeler sl(std::move(t));
+  EXPECT_EQ("ROOT/COMMA", sl(SpanPair{{}, { 0, 1 }}));
+}
+
+TEST(LabelTests, SAMTBackwardApplyComma) {
+  auto t = readTree("(ROOT (, foo) bar)");
+  ASSERT_EQ(2, t.size());
+  Span root{0, 2};
+  EXPECT_EQ(root, t.front().span);
+  root.end = 1;
+  EXPECT_EQ(root, t.back().span);
+  SAMTLabeler sl(std::move(t));
+  EXPECT_EQ("ROOT\\COMMA", sl(SpanPair{{}, { 1, 2 }}));
+}
+
+TEST(LabelTests, SAMTConcatComma) {
+  auto t = readTree("(ROOT baz (, foo) (B bar))");
+  SAMTLabeler sl(std::move(t));
+  EXPECT_EQ("COMMA+B", sl(SpanPair{{}, { 1, 3 }}));
+}
+
+TEST(LabelTests, SAMTDoubleConcatComma) {
+  auto t = readTree("(ROOT baz (A foo) (, bar) (C qux))");
+  SAMTLabeler sl(std::move(t));
+  EXPECT_EQ("A+COMMA+C", sl(SpanPair{{}, { 1, 4 }}));
+}
+
 }
