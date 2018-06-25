@@ -1,12 +1,12 @@
 #!/usr/bin/perl -w
 use strict;
 
-sub abstract {
+sub has_terminals {
   my $rhs = shift;
-  grep { !/^\[\S+\]$/ } (split " ", $rhs);
+  grep { !/,\d+\]$/ } (split " ", $rhs);
 }
 
 while (<>) {
   my (undef,$src,$tgt) = split /\t/;
-  print unless (abstract($src) and abstract($tgt));
+  print if (has_terminals($src) or has_terminals($tgt));
 }
