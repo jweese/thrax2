@@ -1,0 +1,29 @@
+#!/usr/bin/perl -w
+use strict;
+
+my %allowed = map { $_ => undef } @ARGV;
+@ARGV = ();
+
+sub labels {
+  my @result;
+  my $rule = shift;
+  while (/\[(\S+?)(:?,\d+)?\]/g) {
+    push @result, $1;
+  }
+  return @result;
+}
+
+sub allowed {
+  foreach (@_) {
+    return 0 if (!exists($allowed{ccg}) and (/\// or /\\/));
+    return 0 if (!exists($allowed{concat}) and /\+/);
+    return 0 if (!exists($allowed{double_concat}) and /\+.+\+/);
+    return 0 if (!exists($allowed{constituent}) and !/\+|\\|\//);
+  }
+  return 1;
+}
+
+while (<>) {
+  my @labels = labels($_);
+  print if allowed(labels);
+}
