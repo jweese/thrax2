@@ -1,0 +1,12 @@
+#!/usr/bin/perl -w
+use strict;
+
+sub abstract {
+  my $rhs = shift;
+  grep { !/^\[\S+\]$/ } (split " ", $rhs);
+}
+
+while (<>) {
+  my (undef,$src,$tgt) = split /\t/;
+  print unless (abstract($src) and abstract($tgt));
+}
