@@ -16,6 +16,7 @@ while (<>) {
     print if
       (token_count($src) <= $lexicalMax and token_count($tgt) <= $lexicalMax);
   } else {
-    print if (token_count($src) <= $nonlexMax);
+    print if
+      (token_count($src) <= $nonlexMax and token_count($tgt) <= $nonlexMax);
   }
 }
