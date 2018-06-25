@@ -1,2 +1,2 @@
-#!/usr/bin/awk -f
-!/\t$/
+#!/bin/bash
+exec perl -ne 'print unless /\t$/;'
