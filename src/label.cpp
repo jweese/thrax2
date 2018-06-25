@@ -37,13 +37,14 @@ using SAMTLabel = std::variant<
   DoubleConcat
 >;
 
+auto replaceComma(std::string_view label) {
+  // ',' is a separator between NT symbol and RHS index.
+  return std::string(label == "," ? "COMMA" : label);
+}
+
 struct LabelVisitor {
   std::string operator()(Constituent c) const {
-    // ',' is a separator between NT symbol and RHS index.
-    if (c.label == ",") {
-      return "COMMA";
-    }
-    return std::string(c.label);
+    return replaceComma(c.label);
   }
   std::string operator()(ForwardApply fa) const {
     return std::string(fa.result) + "/" + std::string(fa.arg);
