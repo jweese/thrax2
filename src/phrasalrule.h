@@ -30,11 +30,6 @@ struct PhrasalRule {
         sentence(asp),
         alignment(copyPoints(sentence.alignment, lhs.src.start, lhs.src.end)) {}
 
-  auto ntsInSourceOrder() const {
-    // We happen to know that NTs are added in source order.
-    return nts;
-  }
-
   int ntIndex(SpanPair nt) const {
     auto it = std::find(nts.begin(), nts.end(), nt);
     return static_cast<int>(1 + std::distance(nts.begin(), it));
