@@ -35,8 +35,9 @@ Rules addAllNonterminals(
   Rules next;
   next.reserve(rules.size());
   for (const auto& rule : rules) {
+    auto prev = rule.nextNT == 0 ? rule.lhs : rule.nts[rule.nextNT - 1];
     auto it = std::lower_bound(
-        phrases.begin(), phrases.end(), rule.lhs, bySourceStart);
+        phrases.begin(), phrases.end(), prev, bySourceStart);
     for (; it < phrases.end(); ++it) {
       if (auto r = addNonterminal(rule, *it); r.has_value()) {
         next.push_back(*std::move(r));
