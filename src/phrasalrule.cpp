@@ -26,7 +26,7 @@ std::optional<PhrasalRule> addNonterminal(const PhrasalRule& r, SpanPair nt) {
   PhrasalRule result(r);
   result.nts[result.nextNT++] = nt;
   cutPoints(result.alignment, nt.src.start, nt.src.end);
-  return std::make_optional<PhrasalRule>(std::move(result));
+  return result;
 }
 
 using Rules = std::vector<PhrasalRule>;
@@ -35,12 +35,12 @@ Rules addAllNonterminals(
     const Rules& rules, const std::vector<SpanPair>& phrases) {
   Rules next;
   next.reserve(rules.size());
-  for (auto rule : rules) {
+  for (const auto& rule : rules) {
     auto it = std::lower_bound(
         phrases.begin(), phrases.end(), rule.lhs, bySourceStart);
     for (; it < phrases.end(); ++it) {
       if (auto r = addNonterminal(rule, *it); r.has_value()) {
-        next.push_back(std::move(*r));
+        next.push_back(*std::move(r));
       } else if (it->src.start >= rule.lhs.src.end) {
         break;
       }
