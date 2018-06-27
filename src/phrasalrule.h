@@ -91,7 +91,7 @@ inline void printRhs(std::ostream& out, LabeledRuleView v) {
   const auto& s = rule.sentence;
   constexpr auto empty = [](auto nt) { return nt.empty(); };
   auto nts = rule.nts;
-  auto it = std::remove_if(nts.begin(), nts.end(), empty);
+  auto it = std::find_if(nts.begin(), nts.end(), empty);
   if constexpr (!SourceSide) {
     std::sort(
         nts.begin(),
