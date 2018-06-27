@@ -12,7 +12,8 @@
 
 namespace {
 
-std::mutex inputLock, outputLock;
+int count;
+std::mutex countLock, inputLock, outputLock;
 
 enum class GrammarType {
   Hiero,
@@ -45,6 +46,14 @@ bool process() {
     std::cout << out.str();
   } catch (std::exception& e) {
     std::cerr << e.what() << ' ' << line << '\n';
+  }
+  {
+    std::lock_guard g(countLock);
+    count++;
+    if (count % 1000 == 0) {
+      std::lock_guard g(outputLock);
+      std::cerr << count << std::endl << std::flush;
+    }
   }
   return true;
 }
