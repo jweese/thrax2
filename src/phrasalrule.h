@@ -40,7 +40,7 @@ struct PhrasalRule {
     Alignment result(alignment);
     for (auto& point : result) {
       point.src = terminalIndex<true>(point.src);
-      point.tgt = terminalIndex<true>(point.tgt);
+      point.tgt = terminalIndex<false>(point.tgt);
     }
     return result;
   }
@@ -56,15 +56,13 @@ struct PhrasalRule {
     }
     for (auto nt : nts) {
       if constexpr (SourceSide) {
-        if (nt.src.start >= i) {
-          break;
+        if (nt.src.start < i) {
+          result -= nt.src.size();
         }
-        result -= nt.src.size();
       } else {
-        if (nt.tgt.start >= i) {
-          break;
+        if (nt.tgt.start < i) {
+          result -= nt.tgt.size();
         }
-        result -= nt.tgt.size();
       }
     }
     return result;
