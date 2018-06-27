@@ -21,38 +21,14 @@ struct PhrasalRule {
   int nextNT = 0;
   SpanPair lhs{};
   const AlignedSentencePair& sentence;
+  Alignment alignment;
 
   explicit PhrasalRule(const AlignedSentencePair& asp)
       : PhrasalRule(asp, asp.span()) {}
   explicit PhrasalRule(const AlignedSentencePair& asp, SpanPair root)
-      : lhs(root), sentence(asp) {}
-
-  auto sourceTerminalIndices() const {
-    auto sz = lhs.src.size();
-    for (auto nt : nts) {
-      sz -= nt.src.size();
-    }
-    Indices result;
-    result.reserve(sz);
-    auto nt = nts.begin();
-    for (IndexType i = lhs.src.start; i < lhs.src.end; i++) {
-      if (!nt->empty() && i == nt->src.start) {
-        i = nt->src.end - 1;
-        nt++;
-      } else {
-        result.push_back(i);
-      }
-    }
-    return result;
-  }
-
-  auto targetTerminalIndices() const {
-    auto result = lhs.tgt.indices();
-    for (auto nt : nts) {
-      removeIndices(result, nt.tgt);
-    }
-    return result;
-  }
+      : lhs(root),
+        sentence(asp),
+        alignment(copyPoints(sentence.alignment, lhs.src.start, lhs.src.end)) {}
 
   auto ntsInSourceOrder() const {
     // We happen to know that NTs are added in source order.
@@ -64,26 +40,37 @@ struct PhrasalRule {
     return static_cast<int>(1 + std::distance(nts.begin(), it));
   }
 
-  Alignment alignment() const {
-    auto ss = sourceTerminalIndices();
-    if (ss.empty()) {
-      return {};
+
+  auto terminalAlignment() const {
+    Alignment result(alignment);
+    for (auto& point : result) {
+      point.src = terminalIndex<true>(point.src);
+      point.tgt = terminalIndex<true>(point.tgt);
     }
-    const auto& al = sentence.alignment;
-    auto result = copyPoints(al, lhs.src.start, lhs.src.end);
+    return result;
+  }
+
+ private:
+  template<bool SourceSide>
+  PointType terminalIndex(PointType i) const {
+    auto result = i;
+    if constexpr (SourceSide) {
+      result -= lhs.src.start;
+    } else {
+      result -= lhs.tgt.start;
+    }
     for (auto nt : nts) {
-      if (!nt.empty()) {
-        cutPoints(result, nt.src.start, nt.src.end);
+      if constexpr (SourceSide) {
+        if (nt.src.start >= i) {
+          break;
+        }
+        result -= nt.src.size();
+      } else {
+        if (nt.tgt.start >= i) {
+          break;
+        }
+        result -= nt.tgt.size();
       }
-    }
-    auto ts = targetTerminalIndices();
-    auto idx = [](const Indices& is, auto i) {
-      auto it = std::lower_bound(is.begin(), is.end(), i);
-      return static_cast<IndexType>(it - is.begin());
-    };
-    for (auto& p : result) {
-      p.src = idx(ss, p.src);
-      p.tgt = idx(ts, p.tgt);
     }
     return result;
   }
@@ -148,7 +135,7 @@ inline std::ostream& operator<<(std::ostream& out, LabeledRuleView v) {
   out << kSep;
   printRhs<false>(out, v);
   out << kSep;
-  printAlignment(out, rule.alignment());
+  printAlignment(out, rule.terminalAlignment());
   return out;
 }
 

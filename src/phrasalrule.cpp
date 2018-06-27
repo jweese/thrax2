@@ -6,7 +6,7 @@ namespace jhu::thrax {
 
 namespace {
 
-std::optional<PhrasalRule> addNonterminal(PhrasalRule r, SpanPair nt) {
+std::optional<PhrasalRule> addNonterminal(const PhrasalRule& r, SpanPair nt) {
   if (!r.lhs.contains(nt)) {
     return {};
   }
@@ -23,9 +23,10 @@ std::optional<PhrasalRule> addNonterminal(PhrasalRule r, SpanPair nt) {
         })) {
     return {};
   }
-  *it = nt;
-  r.nextNT++;
-  return std::make_optional<PhrasalRule>(std::move(r));
+  PhrasalRule result(r);
+  result.nts[result.nextNT++] = nt;
+  cutPoints(result.alignment, nt.src.start, nt.src.end);
+  return std::make_optional<PhrasalRule>(std::move(result));
 }
 
 using Rules = std::vector<PhrasalRule>;
