@@ -10,23 +10,22 @@ std::optional<PhrasalRule> addNonterminal(const PhrasalRule& r, SpanPair nt) {
   if (!r.lhs.contains(nt)) {
     return {};
   }
-  auto it = r.nts.begin() + r.nextNT;
+  auto begin = r.nts.begin();
+  auto it = begin + r.nextNT;
   if (it == r.nts.end()) {
     return {};
   }
-  if (it > r.nts.begin() && nt.src.start < (it - 1)->src.start) {
+  if (it > begin && nt.src.start < (it - 1)->src.start) {
     return {};
   }
   if (!std::all_of(
-        r.nts.begin(), it, [nt](auto i) {
-          return disjoint(i, nt);
-        })) {
+        begin, it, [nt](auto i) { return disjoint(i, nt); })) {
     return {};
   }
   PhrasalRule result(r);
   result.nts[result.nextNT++] = nt;
   cutPoints(result.alignment, nt.src.start, nt.src.end);
-  return result;
+  return std::move(result);
 }
 
 using Rules = std::vector<PhrasalRule>;
