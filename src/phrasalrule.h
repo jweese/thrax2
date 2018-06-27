@@ -18,6 +18,7 @@ using Rhs = std::array<SpanPair, kMaxNonterminals>;
 
 struct PhrasalRule {
   Rhs nts{};
+  int nextNT = 0;
   SpanPair lhs{};
   const AlignedSentencePair& sentence;
 

@@ -10,8 +10,7 @@ std::optional<PhrasalRule> addNonterminal(PhrasalRule r, SpanPair nt) {
   if (!r.lhs.contains(nt)) {
     return {};
   }
-  auto it = std::find_if(
-      r.nts.begin(), r.nts.end(), [](auto i) { return i.empty(); });
+  auto it = r.nts.begin() + r.nextNT;
   if (it == r.nts.end()) {
     return {};
   }
@@ -25,6 +24,7 @@ std::optional<PhrasalRule> addNonterminal(PhrasalRule r, SpanPair nt) {
     return {};
   }
   *it = nt;
+  r.nextNT++;
   return std::make_optional<PhrasalRule>(std::move(r));
 }
 
