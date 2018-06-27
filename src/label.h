@@ -18,7 +18,7 @@ class HieroLabeler : public Labeler {
     return X;
   }
  private:
-  constexpr static std::string_view X = "X";
+  constexpr static const char* X = "X";
 };
 
 struct CachedLabel {
