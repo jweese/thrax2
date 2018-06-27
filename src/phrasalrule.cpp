@@ -34,10 +34,14 @@ Rules addAllNonterminals(
     const Rules& rules, const std::vector<SpanPair>& phrases) {
   Rules next;
   next.reserve(rules.size());
-  for (auto p : phrases) {
-    for (auto rule : rules) {
-      if (auto r = addNonterminal(rule, p); r.has_value()) {
+  for (auto rule : rules) {
+    auto it = std::lower_bound(
+        phrases.begin(), phrases.end(), rule.lhs, bySourceStart);
+    for (; it < phrases.end(); ++it) {
+      if (auto r = addNonterminal(rule, *it); r.has_value()) {
         next.push_back(std::move(*r));
+      } else if (it->src.start >= rule.lhs.src.end) {
+        break;
       }
     }
   }
@@ -62,7 +66,8 @@ std::vector<T> cat(std::array<std::vector<T>, N>&& vals) {
 }
 
 std::vector<PhrasalRule> extract(
-    const AlignedSentencePair& sentence, const std::vector<SpanPair>& initial) {
+    const AlignedSentencePair& sentence, std::vector<SpanPair> initial) {
+  std::sort(initial.begin(), initial.end(), bySourceStart);
   std::array<Rules, kMaxNonterminals + 1> rules;
   rules.front().reserve(initial.size());
   for (auto p : initial) {

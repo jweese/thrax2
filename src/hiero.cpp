@@ -27,7 +27,7 @@ bool process() {
     auto initial = jhu::thrax::minimalConsistentPairs(asp.alignment, 10);
     auto label = jhu::thrax::HieroLabeler{};
     std::ostringstream out;
-    for (const auto& rule : jhu::thrax::extract(asp, initial)) {
+    for (const auto& rule : jhu::thrax::extract(asp, std::move(initial))) {
       out << jhu::thrax::LabeledRuleView{ rule, label } << '\n';
     }
     std::lock_guard g(outputLock);

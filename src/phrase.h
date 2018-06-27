@@ -88,6 +88,10 @@ constexpr bool disjoint(SpanPair a, SpanPair b) {
   return disjoint(a.src, b.src) && disjoint(a.tgt, b.tgt);
 }
 
+constexpr bool bySourceStart(SpanPair a, SpanPair b) {
+  return a.src.start < b.src.start;
+}
+
 inline std::ostream& operator<<(std::ostream& out, Span s) {
   return out << '[' << s.start << ',' << s.end << ')';
 }

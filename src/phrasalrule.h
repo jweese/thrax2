@@ -153,6 +153,6 @@ inline std::ostream& operator<<(std::ostream& out, LabeledRuleView v) {
 }
 
 std::vector<PhrasalRule> extract(
-    const AlignedSentencePair& sentence, const std::vector<SpanPair>& initial);
+    const AlignedSentencePair& sentence, std::vector<SpanPair> initial);
 
 }
