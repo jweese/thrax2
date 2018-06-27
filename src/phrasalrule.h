@@ -99,10 +99,10 @@ inline void printRhs(std::ostream& out, LabeledRuleView v) {
         [](auto a, auto b) { return a.tgt.start < b.tgt.start; });
   }
   auto nt = nts.begin();
-  auto indices = rule.lhs.get<SourceSide>().indices();
-  for (auto i : indices) {
+  auto [start, end] = rule.lhs.get<SourceSide>();
+  for (auto i = start; i < end; i++) {
     if (nt == it || i < nt->template get<SourceSide>().start) {
-      if (i != indices.front()) {
+      if (i != start) {
         out << ' ';
       }
       if constexpr (SourceSide) {
@@ -111,8 +111,7 @@ inline void printRhs(std::ostream& out, LabeledRuleView v) {
         out << s.tgt[i];
       }
     } else if (i == nt->template get<SourceSide>().end - 1) {
-      if (i != indices.front()
-          && nt->template get<SourceSide>().start != indices.front()) {
+      if (i != start && nt->template get<SourceSide>().start != start) {
         out << ' ';
       }
       bracket(out, labeler(*nt), rule.ntIndex(*nt));
