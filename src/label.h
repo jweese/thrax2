@@ -8,15 +8,17 @@ namespace jhu::thrax {
 
 class Labeler {
  public:
-  virtual std::string operator()(SpanPair nt) const = 0;
+  virtual std::string_view operator()(SpanPair nt) const = 0;
   virtual ~Labeler() = default;
 };
 
 class HieroLabeler : public Labeler {
  public:
-  std::string operator()(SpanPair) const override {
-    return "X";
+  std::string_view operator()(SpanPair) const override {
+    return X;
   }
+ private:
+  constexpr static std::string_view X = "X";
 };
 
 struct CachedLabel {
@@ -27,7 +29,7 @@ struct CachedLabel {
 class SAMTLabeler : public Labeler {
  public:
   explicit SAMTLabeler(Tree t) : tree_(std::move(t)) {}
-  std::string operator()(SpanPair nt) const override;
+  std::string_view operator()(SpanPair nt) const override;
 
  private:
   Tree tree_;

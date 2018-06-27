@@ -159,15 +159,14 @@ constexpr bool spanOrder(const CachedLabel& la, const CachedLabel& lb) {
 
 }  // namespace
 
-std::string SAMTLabeler::operator()(SpanPair nt) const {
+std::string_view SAMTLabeler::operator()(SpanPair nt) const {
   key_.span = nt.tgt;
   auto it = std::lower_bound(cache_.begin(), cache_.end(), key_, spanOrder);
   if (it != cache_.end() && it->span == nt.tgt) {
     return it->label;
   }
   auto result = std::visit(LabelVisitor{}, label(tree_, nt));
-  cache_.insert(it, CachedLabel{ nt.tgt, result });
-  return result;
+  return cache_.insert(it, CachedLabel{ nt.tgt, result })->label;
 }
 
 }
