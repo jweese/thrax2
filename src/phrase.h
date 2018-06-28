@@ -79,6 +79,10 @@ struct SpanPair {
     return src == sp.src && tgt == sp.tgt;
   }
 
+  bool operator!=(SpanPair sp) const {
+    return !(*this == sp);
+  }
+
   bool contains(SpanPair sp) const {
     return src.contains(sp.src) && tgt.contains(sp.tgt);
   }

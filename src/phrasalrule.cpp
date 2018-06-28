@@ -39,6 +39,9 @@ Rules addAllNonterminals(
     key.lhs = rule.lhs;
     auto it = std::lower_bound(
         phrases.begin(), phrases.end(), key, byLhsSourceStart);
+    while (it->lhs.span != rule.lhs.span) {
+      it++;
+    }
     for (auto p : it->contained) {
       if (auto r = addNonterminal(rule, *p); r.has_value()) {
         next.push_back(*std::move(r));
