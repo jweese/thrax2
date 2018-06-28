@@ -69,7 +69,7 @@ std::vector<T> cat(std::array<std::vector<T>, N>&& vals) {
 std::vector<PhrasalRule> extract(
     const Labeler& labeler,
     const AlignedSentencePair& sentence,
-    std::vector<SpanPair> initial) {
+    const std::vector<SpanPair>& initial) {
   std::array<Rules, kMaxNonterminals + 1> rules;
   std::vector<NT> nts(initial.size());
   std::transform(
