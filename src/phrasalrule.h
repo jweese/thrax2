@@ -53,24 +53,6 @@ struct PhrasalRule {
     return 0;
   }
 
-
-  auto terminalAlignment() const& {
-    Alignment result(alignment);
-    for (auto& point : result) {
-      point.src = terminalIndex<true>(point.src);
-      point.tgt = terminalIndex<false>(point.tgt);
-    }
-    return result;
-  }
-
-  auto terminalAlignment() && {
-    for (auto& point : alignment) {
-      point.src = terminalIndex<true>(point.src);
-      point.tgt = terminalIndex<false>(point.tgt);
-    }
-    return std::move(alignment);
-  }
-
   void printAlignment(std::ostream& out) const {
     bool firstPointToPrint = true;
     for (auto point : sentence.alignment) {
@@ -169,18 +151,6 @@ inline void printRhs(std::ostream& out, const PhrasalRule& rule) {
 }
 
 inline std::ostream& operator<<(std::ostream& out, const PhrasalRule& rule) {
-  const static std::string_view kSep = "\t";
-  bracket(out, rule.lhs.label, kLhsIndex);
-  out << kSep;
-  printRhs<true>(out, rule);
-  out << kSep;
-  printRhs<false>(out, rule);
-  out << kSep;
-  rule.printAlignment(out);
-  return out;
-}
-
-inline std::ostream& operator<<(std::ostream& out, PhrasalRule&& rule) {
   const static std::string_view kSep = "\t";
   bracket(out, rule.lhs.label, kLhsIndex);
   out << kSep;
