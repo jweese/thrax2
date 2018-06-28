@@ -38,7 +38,8 @@ bool process() {
       label = std::make_unique<jhu::thrax::SAMTLabeler>(std::move(tree));
     }
     std::ostringstream out;
-    for (const auto& rule : jhu::thrax::extract(asp, std::move(initial))) {
+    for (const auto& rule
+            : jhu::thrax::extract(*label, asp, std::move(initial))) {
       out << jhu::thrax::LabeledRuleView{ rule, *label } << '\n';
     }
     std::lock_guard g(outputLock);

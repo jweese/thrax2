@@ -21,6 +21,7 @@ struct NT {
 
   NT() = default;
   NT(SpanPair sp) : span(sp) {}
+  NT(SpanPair sp, std::string_view sv) : span(sp), label(sv) {}
 };
 using Rhs = std::array<NT, kMaxNonterminals>;
 
@@ -33,11 +34,11 @@ struct PhrasalRule {
 
   explicit PhrasalRule(const AlignedSentencePair& asp)
       : PhrasalRule(asp, asp.span()) {}
-  explicit PhrasalRule(const AlignedSentencePair& asp, SpanPair root)
+  explicit PhrasalRule(const AlignedSentencePair& asp, NT root)
       : lhs(root),
         sentence(asp),
-        alignment(
-            copyPoints(sentence.alignment, root.src.start, root.src.end)) {}
+        alignment(copyPoints(
+              sentence.alignment, lhs.span.src.start, lhs.span.src.end)) {}
 
   int ntIndex(SpanPair nt) const {
     auto it = std::find_if(
@@ -142,6 +143,8 @@ inline std::ostream& operator<<(std::ostream& out, LabeledRuleView v) {
 }
 
 std::vector<PhrasalRule> extract(
-    const AlignedSentencePair& sentence, std::vector<SpanPair> initial);
+    const Labeler& labeler,
+    const AlignedSentencePair& sentence,
+    std::vector<SpanPair> initial);
 
 }

@@ -68,12 +68,20 @@ std::vector<T> cat(std::array<std::vector<T>, N>&& vals) {
 }
 
 std::vector<PhrasalRule> extract(
-    const AlignedSentencePair& sentence, std::vector<SpanPair> initial) {
+    const Labeler& labeler,
+    const AlignedSentencePair& sentence,
+    std::vector<SpanPair> initial) {
   std::sort(initial.begin(), initial.end(), bySourceStart);
   std::array<Rules, kMaxNonterminals + 1> rules;
-  rules.front().reserve(initial.size());
-  for (auto p : initial) {
-    rules.front().emplace_back(sentence, p);
+  std::vector<NT> nts(initial.size());
+  std::transform(
+      initial.begin(),
+      initial.end(),
+      nts.begin(),
+      [&labeler](auto p) { return NT(p, labeler(p)); });
+  rules.front().reserve(nts.size());
+  for (auto nt : nts) {
+    rules.front().emplace_back(sentence, nt);
   }
   for (size_t i = 0; i < kMaxNonterminals; i++) {
     rules[i + 1] = addAllNonterminals(rules[i], initial);

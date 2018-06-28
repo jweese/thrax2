@@ -43,8 +43,8 @@ TEST(LabelTests, PrintHieroReorder) {
   auto asp = readAlignedSentencePair<false, false>("a c\tb d\t0-0");
   std::ostringstream s;
   PhrasalRule rule{asp};
-  rule.nts[0] = NT({{0, 1}, {1, 2}});
-  rule.nts[1] = NT({{1, 2}, {0, 1}});
+  rule.nts[0].span = {{0, 1}, {1, 2}};
+  rule.nts[1].span = {{1, 2}, {0, 1}};
   auto nt = rule.nts[0].span;
   cutPoints(rule.alignment, nt.src.start, nt.src.end);
   nt = rule.nts[1].span;
