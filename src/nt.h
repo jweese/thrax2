@@ -35,8 +35,14 @@ struct ContainedNTs {
   }
 };
 
-constexpr bool byLhsSourceStart(const ContainedNTs& a, const ContainedNTs& b) {
-  return a.lhs.span.src.start < b.lhs.span.src.start;
+constexpr bool before(Span a, Span b) {
+  return a.start < b.start || (a.start == b.start && a.end < b.end);
+}
+
+constexpr bool byLhsSpan(const ContainedNTs& a, const ContainedNTs& b) {
+  auto al = a.lhs.span;
+  auto bl = b.lhs.span;
+  return before(al.src, bl.src) || (al.src == bl.src && before(al.tgt, bl.tgt));
 }
 
 }

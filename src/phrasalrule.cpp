@@ -7,7 +7,7 @@ namespace jhu::thrax {
 namespace {
 
 std::optional<PhrasalRule> addNonterminal(const PhrasalRule& r, const NT& nt) {
-  if (r.lhs.span == nt.span || !r.lhs.span.contains(nt.span)) {
+  if (r.lhs.span == nt.span) {
     return {};
   }
   auto begin = r.nts.begin();
@@ -38,10 +38,7 @@ Rules addAllNonterminals(
   for (const auto& rule : rules) {
     key.lhs = rule.lhs;
     auto it = std::lower_bound(
-        phrases.begin(), phrases.end(), key, byLhsSourceStart);
-    while (it->lhs.span != rule.lhs.span) {
-      it++;
-    }
+        phrases.begin(), phrases.end(), key, byLhsSpan);
     for (auto p : it->contained) {
       if (auto r = addNonterminal(rule, *p); r.has_value()) {
         next.push_back(*std::move(r));
@@ -85,10 +82,10 @@ std::vector<PhrasalRule> extract(
       [&labeler](auto p) { return NT(p, labeler(p)); });
   std::vector<ContainedNTs> contained;
   contained.reserve(nts.size());
-  for (auto& nt : nts) {
+  for (auto nt : nts) {
     contained.emplace_back(nts, std::move(nt));
   }
-  std::sort(contained.begin(), contained.end(), byLhsSourceStart);
+  std::sort(contained.begin(), contained.end(), byLhsSpan);
   rules.front().reserve(contained.size());
   for (const auto& c : contained) {
     rules.front().emplace_back(sentence, c.lhs);
