@@ -21,17 +21,22 @@ constexpr bool bySourceStart(const NT& a, const NT& b) {
 }
 
 struct ContainedNTs {
-  const NT* lhs;
+  NT lhs;
   std::vector<const NT*> contained;
 
-  ContainedNTs(const std::vector<NT>& nts, const NT& root)
-      : lhs(&root), contained() {
+  ContainedNTs() = default;
+  ContainedNTs(const std::vector<NT>& nts, NT root)
+      : lhs(std::move(root)), contained() {
     for (const auto& nt : nts) {
-      if (root.span.contains(nt.span)) {
+      if (lhs.span.contains(nt.span)) {
         contained.push_back(&nt);
       }
     }
   }
 };
+
+constexpr bool byLhsSourceStart(const ContainedNTs& a, const ContainedNTs& b) {
+  return a.lhs.span.src.start < b.lhs.span.src.start;
+}
 
 }

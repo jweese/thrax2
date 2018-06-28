@@ -30,18 +30,18 @@ std::optional<PhrasalRule> addNonterminal(const PhrasalRule& r, const NT& nt) {
 
 using Rules = std::vector<PhrasalRule>;
 
-Rules addAllNonterminals(const Rules& rules, const std::vector<NT>& phrases) {
+Rules addAllNonterminals(
+    const Rules& rules, const std::vector<ContainedNTs>& phrases) {
   Rules next;
   next.reserve(rules.size());
+  ContainedNTs key;
   for (const auto& rule : rules) {
-    const auto& prev = rule.nextNT == 0 ? rule.lhs : rule.nts[rule.nextNT - 1];
+    key.lhs = rule.lhs;
     auto it = std::lower_bound(
-        phrases.begin(), phrases.end(), prev, bySourceStart);
-    for (; it < phrases.end(); ++it) {
-      if (auto r = addNonterminal(rule, *it); r.has_value()) {
+        phrases.begin(), phrases.end(), key, byLhsSourceStart);
+    for (auto p : it->contained) {
+      if (auto r = addNonterminal(rule, *p); r.has_value()) {
         next.push_back(*std::move(r));
-      } else if (it->span.src.start >= rule.lhs.span.src.end) {
-        break;
       }
     }
   }
@@ -80,13 +80,18 @@ std::vector<PhrasalRule> extract(
       initial.end(),
       nts.begin(),
       [&labeler](auto p) { return NT(p, labeler(p)); });
-  std::sort(nts.begin(), nts.end(), bySourceStart);
-  rules.front().reserve(nts.size());
-  for (auto nt : nts) {
-    rules.front().emplace_back(sentence, nt);
+  std::vector<ContainedNTs> contained;
+  contained.reserve(nts.size());
+  for (auto& nt : nts) {
+    contained.emplace_back(nts, std::move(nt));
+  }
+  std::sort(contained.begin(), contained.end(), byLhsSourceStart);
+  rules.front().reserve(contained.size());
+  for (const auto& c : contained) {
+    rules.front().emplace_back(sentence, c.lhs);
   }
   for (size_t i = 0; i < kMaxNonterminals; i++) {
-    rules[i + 1] = addAllNonterminals(rules[i], nts);
+    rules[i + 1] = addAllNonterminals(rules[i], contained);
   }
   return cat(std::move(rules));
 }
