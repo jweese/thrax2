@@ -15,15 +15,15 @@ std::optional<PhrasalRule> addNonterminal(const PhrasalRule& r, SpanPair nt) {
   if (it == r.nts.end()) {
     return {};
   }
-  if (it > begin && nt.src.start < (it - 1)->src.start) {
+  if (it > begin && nt.src.start < (it - 1)->span.src.start) {
     return {};
   }
   if (!std::all_of(
-        begin, it, [nt](auto i) { return disjoint(i, nt); })) {
+        begin, it, [nt](auto i) { return disjoint(i.span, nt); })) {
     return {};
   }
   PhrasalRule result(r);
-  result.nts[result.nextNT++] = nt;
+  result.nts[result.nextNT++] = NT(nt);
   cutPoints(result.alignment, nt.src.start, nt.src.end);
   return std::move(result);
 }
@@ -35,7 +35,7 @@ Rules addAllNonterminals(
   Rules next;
   next.reserve(rules.size());
   for (const auto& rule : rules) {
-    auto prev = rule.nextNT == 0 ? rule.lhs : rule.nts[rule.nextNT - 1];
+    auto prev = rule.nextNT == 0 ? rule.lhs : rule.nts[rule.nextNT - 1].span;
     auto it = std::lower_bound(
         phrases.begin(), phrases.end(), prev, bySourceStart);
     for (; it < phrases.end(); ++it) {

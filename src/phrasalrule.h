@@ -14,7 +14,15 @@
 namespace jhu::thrax {
 
 constexpr size_t kMaxNonterminals = 4;
-using Rhs = std::array<SpanPair, kMaxNonterminals>;
+
+struct NT {
+  SpanPair span{};
+  std::string_view label{};
+
+  NT() = default;
+  NT(SpanPair sp) : span(sp) {}
+};
+using Rhs = std::array<NT, kMaxNonterminals>;
 
 struct PhrasalRule {
   Rhs nts{};
@@ -31,7 +39,8 @@ struct PhrasalRule {
         alignment(copyPoints(sentence.alignment, lhs.src.start, lhs.src.end)) {}
 
   int ntIndex(SpanPair nt) const {
-    auto it = std::find(nts.begin(), nts.end(), nt);
+    auto it = std::find_if(
+        nts.begin(), nts.end(), [nt](auto i) { return i.span == nt; });
     return static_cast<int>(1 + std::distance(nts.begin(), it));
   }
 
@@ -56,12 +65,12 @@ struct PhrasalRule {
     }
     for (auto nt : nts) {
       if constexpr (SourceSide) {
-        if (nt.src.start < i) {
-          result -= nt.src.size();
+        if (nt.span.src.start < i) {
+          result -= nt.span.src.size();
         }
       } else {
-        if (nt.tgt.start < i) {
-          result -= nt.tgt.size();
+        if (nt.span.tgt.start < i) {
+          result -= nt.span.tgt.size();
         }
       }
     }
@@ -87,19 +96,19 @@ template<bool SourceSide>
 inline void printRhs(std::ostream& out, LabeledRuleView v) {
   const auto& [rule, labeler] = v;
   const auto& s = rule.sentence;
-  constexpr auto empty = [](auto nt) { return nt.empty(); };
+  constexpr auto empty = [](auto nt) { return nt.span.empty(); };
   auto nts = rule.nts;
   auto it = std::find_if(nts.begin(), nts.end(), empty);
   if constexpr (!SourceSide) {
     std::sort(
         nts.begin(),
         it,
-        [](auto a, auto b) { return a.tgt.start < b.tgt.start; });
+        [](auto a, auto b) { return a.span.tgt.start < b.span.tgt.start; });
   }
   auto nt = nts.begin();
   auto [start, end] = rule.lhs.get<SourceSide>();
   for (auto i = start; i < end; i++) {
-    if (nt == it || i < nt->template get<SourceSide>().start) {
+    if (nt == it || i < nt->span.template get<SourceSide>().start) {
       if (i != start) {
         out << ' ';
       }
@@ -108,11 +117,11 @@ inline void printRhs(std::ostream& out, LabeledRuleView v) {
       } else {
         out << s.tgt[i];
       }
-    } else if (i == nt->template get<SourceSide>().end - 1) {
-      if (i != start && nt->template get<SourceSide>().start != start) {
+    } else if (i == nt->span.template get<SourceSide>().end - 1) {
+      if (i != start && nt->span.template get<SourceSide>().start != start) {
         out << ' ';
       }
-      bracket(out, labeler(*nt), rule.ntIndex(*nt));
+      bracket(out, labeler(nt->span), rule.ntIndex(nt->span));
       nt++;
     }
   }
