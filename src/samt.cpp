@@ -5,6 +5,7 @@
 #include <sstream>
 #include <vector>
 
+#include "filters.h"
 #include "label.h"
 #include "phrasalrule.h"
 #include "sentence.h"
@@ -13,6 +14,10 @@
 namespace {
 
 std::mutex inputLock, outputLock;
+
+bool valid(const jhu::thrax::PhrasalRule& rule) {
+  return !isNonlexicalXRule(rule);
+}
 
 bool process() {
   std::string line;
@@ -29,7 +34,9 @@ bool process() {
     auto label = jhu::thrax::SAMTLabeler{std::move(tree)};
     std::ostringstream out;
     for (auto& rule : jhu::thrax::extract(label, asp, std::move(initial))) {
-      out << std::move(rule) << '\n';
+      if (valid(rule)) {
+        out << std::move(rule) << '\n';
+      }
     }
     std::lock_guard g(outputLock);
     std::cout << out.str();
