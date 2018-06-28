@@ -32,7 +32,7 @@ TEST(LabelTests, PrintHieroUnary) {
   auto asp = readAlignedSentencePair<false, false>("a\tb\t0-0");
   std::ostringstream s;
   PhrasalRule rule{asp};
-  rule.nts.front() = NT(asp.span());
+  rule.nts.front() = NT(asp.span(), "X");
   auto nt = rule.nts.front().span;
   cutPoints(rule.alignment, nt.src.start, nt.src.end);
   s << LabeledRuleView{ rule, HieroLabeler{} };
@@ -43,8 +43,8 @@ TEST(LabelTests, PrintHieroReorder) {
   auto asp = readAlignedSentencePair<false, false>("a c\tb d\t0-0");
   std::ostringstream s;
   PhrasalRule rule{asp};
-  rule.nts[0].span = {{0, 1}, {1, 2}};
-  rule.nts[1].span = {{1, 2}, {0, 1}};
+  rule.nts[0] = NT({{0, 1}, {1, 2}}, "X");
+  rule.nts[1] = NT({{1, 2}, {0, 1}}, "X");
   auto nt = rule.nts[0].span;
   cutPoints(rule.alignment, nt.src.start, nt.src.end);
   nt = rule.nts[1].span;
@@ -57,7 +57,7 @@ TEST(LabelTests, PrintHieroMixed) {
   auto asp = readAlignedSentencePair<false, false>("a c\tb d\t0-0");
   std::ostringstream s;
   PhrasalRule rule{asp};
-  rule.nts[0].span = {{0, 1}, {1, 2}};
+  rule.nts[0] = NT({{0, 1}, {1, 2}}, "X");
   auto nt = rule.nts.front().span;
   cutPoints(rule.alignment, nt.src.start, nt.src.end);
   s << LabeledRuleView{ rule, HieroLabeler{} };
@@ -68,8 +68,8 @@ TEST(LabelTests, PrintHieroMixed2) {
   auto asp = readAlignedSentencePair<false, false>("a c\tb d e\t0-0");
   std::ostringstream s;
   PhrasalRule rule{asp};
-  rule.nts[0].span = {{0, 1}, {0, 1}};
-  rule.nts[1].span = {{1, 2}, {2, 3}};
+  rule.nts[0] = NT({{0, 1}, {0, 1}}, "X");
+  rule.nts[1] = NT({{1, 2}, {2, 3}}, "X");
   auto nt = rule.nts[0].span;
   cutPoints(rule.alignment, nt.src.start, nt.src.end);
   nt = rule.nts[1].span;

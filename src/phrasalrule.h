@@ -45,9 +45,9 @@ struct PhrasalRule {
         alignment(copyPoints(
               sentence.alignment, lhs.span.src.start, lhs.span.src.end)) {}
 
-  int ntIndex(SpanPair nt) const {
+  int ntIndex(NT nt) const {
     auto it = std::find_if(
-        nts.begin(), nts.end(), [nt](auto i) { return i.span == nt; });
+        nts.begin(), nts.end(), [nt](auto i) { return i.span == nt.span; });
     return static_cast<int>(1 + std::distance(nts.begin(), it));
   }
 
@@ -101,7 +101,7 @@ inline void bracket(std::ostream& out, std::string_view nt, int index) {
 
 template<bool SourceSide>
 inline void printRhs(std::ostream& out, LabeledRuleView v) {
-  const auto& [rule, labeler] = v;
+  const auto& rule = v.rule;
   const auto& s = rule.sentence;
   constexpr auto empty = [](auto nt) { return nt.span.empty(); };
   auto nts = rule.nts;
@@ -128,7 +128,7 @@ inline void printRhs(std::ostream& out, LabeledRuleView v) {
       if (i != start && nt->span.template get<SourceSide>().start != start) {
         out << ' ';
       }
-      bracket(out, labeler(nt->span), rule.ntIndex(nt->span));
+      bracket(out, nt->label, rule.ntIndex(*nt));
       nt++;
     }
   }
