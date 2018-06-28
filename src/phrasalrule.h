@@ -27,7 +27,7 @@ using Rhs = std::array<NT, kMaxNonterminals>;
 struct PhrasalRule {
   Rhs nts{};
   int nextNT = 0;
-  SpanPair lhs{};
+  NT lhs{};
   const AlignedSentencePair& sentence;
   Alignment alignment;
 
@@ -36,7 +36,8 @@ struct PhrasalRule {
   explicit PhrasalRule(const AlignedSentencePair& asp, SpanPair root)
       : lhs(root),
         sentence(asp),
-        alignment(copyPoints(sentence.alignment, lhs.src.start, lhs.src.end)) {}
+        alignment(
+            copyPoints(sentence.alignment, root.src.start, root.src.end)) {}
 
   int ntIndex(SpanPair nt) const {
     auto it = std::find_if(
@@ -59,9 +60,9 @@ struct PhrasalRule {
   PointType terminalIndex(PointType i) const {
     auto result = i;
     if constexpr (SourceSide) {
-      result -= lhs.src.start;
+      result -= lhs.span.src.start;
     } else {
-      result -= lhs.tgt.start;
+      result -= lhs.span.tgt.start;
     }
     for (auto nt : nts) {
       if constexpr (SourceSide) {
@@ -106,7 +107,7 @@ inline void printRhs(std::ostream& out, LabeledRuleView v) {
         [](auto a, auto b) { return a.span.tgt.start < b.span.tgt.start; });
   }
   auto nt = nts.begin();
-  auto [start, end] = rule.lhs.get<SourceSide>();
+  auto [start, end] = rule.lhs.span.get<SourceSide>();
   for (auto i = start; i < end; i++) {
     if (nt == it || i < nt->span.template get<SourceSide>().start) {
       if (i != start) {
@@ -130,7 +131,7 @@ inline void printRhs(std::ostream& out, LabeledRuleView v) {
 inline std::ostream& operator<<(std::ostream& out, LabeledRuleView v) {
   const auto& [rule, labeler] = v;
   const static std::string_view kSep = "\t";
-  bracket(out, labeler(rule.lhs), kLhsIndex);
+  bracket(out, labeler(rule.lhs.span), kLhsIndex);
   out << kSep;
   printRhs<true>(out, v);
   out << kSep;
