@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string_view>
-#include <vector>
 
 #include "phrase.h"
 
@@ -24,31 +23,6 @@ constexpr bool bySourceSpan(const NT& a, const NT& b) {
   auto as = a.span.src;
   auto bs = b.span.src;
   return as.start < bs.start || (as.start == bs.start && as.end < bs.end);
-}
-
-struct ContainedNTs {
-  NT lhs;
-  std::vector<const NT*> contained;
-
-  ContainedNTs() = default;
-  ContainedNTs(const std::vector<NT>& nts, NT root)
-      : lhs(std::move(root)), contained() {
-    for (const auto& nt : nts) {
-      if (lhs.span.contains(nt.span)) {
-        contained.push_back(&nt);
-      }
-    }
-  }
-};
-
-constexpr bool before(Span a, Span b) {
-  return a.start < b.start || (a.start == b.start && a.end < b.end);
-}
-
-constexpr bool byLhsSpan(const ContainedNTs& a, const ContainedNTs& b) {
-  auto al = a.lhs.span;
-  auto bl = b.lhs.span;
-  return before(al.src, bl.src) || (al.src == bl.src && before(al.tgt, bl.tgt));
 }
 
 }
