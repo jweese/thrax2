@@ -5,7 +5,7 @@
 namespace jhu::thrax {
 
 inline bool isNonlexicalXRule(const PhrasalRule& rule) {
-  return rule.nextNT != 0 && rule.lhs.label == "X";
+  return !rule.lexical() && rule.lhs.label == "X";
 }
 
 }

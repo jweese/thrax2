@@ -72,6 +72,10 @@ struct PhrasalRule {
     return Span{ nts[nextNT - 1].span.src.end, lhs.span.src.end };
   }
 
+  bool lexical() const {
+    return nextNT == 0;
+  }
+
  private:
   template<bool SourceSide>
   PointType terminalIndex(PointType i) const {
