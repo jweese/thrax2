@@ -16,7 +16,7 @@ namespace {
 std::mutex inputLock, outputLock;
 
 bool valid(const jhu::thrax::PhrasalRule& rule) {
-  return !isNonlexicalXRule(rule);
+  return !isNonlexicalXRule(rule) && withinTokenLimit(rule);
 }
 
 bool process() {
