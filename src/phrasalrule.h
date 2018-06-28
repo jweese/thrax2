@@ -52,15 +52,16 @@ struct PhrasalRule {
     bool firstPointToPrint = true;
     for (auto point : sentence.alignment) {
       auto src = terminalIndex<true>(point.src);
-      auto tgt = terminalIndex<false>(point.tgt);
-      if (src >= 0 && tgt >= 0) {
-        if (firstPointToPrint) {
-          firstPointToPrint = false;
-        } else {
-          out << ' ';
-        }
-        out << src << '-' << tgt;
+      if (src < 0) {
+        continue;
       }
+      auto tgt = terminalIndex<false>(point.tgt);
+      if (firstPointToPrint) {
+        firstPointToPrint = false;
+      } else {
+        out << ' ';
+      }
+      out << src << '-' << tgt;
     }
   }
 
