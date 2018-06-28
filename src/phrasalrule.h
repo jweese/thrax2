@@ -45,12 +45,16 @@ struct PhrasalRule {
         alignment(copyPoints(
               sentence.alignment, lhs.span.src.start, lhs.span.src.end)) {}
 
-  int ntIndex(const NT& nt) const {
-    auto it = std::find_if(
-        nts.begin(),
-        nts.end(),
-        [&nt](const auto& i) { return i.span == nt.span; });
-    return static_cast<int>(1 + std::distance(nts.begin(), it));
+  int ntIndex(const NT& needle) const {
+    int i = 1;
+    for (const auto& nt : nts) {
+      if (nt.span == needle.span) {
+        return i;
+      } else {
+        i++;
+      }
+    }
+    return 0;
   }
 
 
