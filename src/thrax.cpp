@@ -40,7 +40,7 @@ bool process() {
     std::ostringstream out;
     for (const auto& rule
             : jhu::thrax::extract(*label, asp, std::move(initial))) {
-      out << jhu::thrax::LabeledRuleView{ rule, *label } << '\n';
+      out << rule << '\n';
     }
     std::lock_guard g(outputLock);
     std::cout << out.str();

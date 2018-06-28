@@ -14,7 +14,7 @@ int main() {
       auto initial = jhu::thrax::allConsistentPairs(asp, 12);
       jhu::thrax::SAMTLabeler samt{std::move(tree)};
       for (const auto& rule : jhu::thrax::extract(samt, asp, initial)) {
-        std::cout << jhu::thrax::LabeledRuleView{ rule, samt } << '\n';
+        std::cout << rule << '\n';
       }
     } catch (std::exception& e) {
       std::cerr << e.what() << ' ' << line << '\n';

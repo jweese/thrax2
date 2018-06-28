@@ -16,7 +16,7 @@ TEST(LabelTests, PrintHieroLexical) {
   auto asp = readAlignedSentencePair<false, false>("a\tb\t0-0");
   PhrasalRule rule{asp};
   std::ostringstream s;
-  s << LabeledRuleView{ rule, HieroLabeler{} };
+  s << rule;
   EXPECT_EQ("[X]\ta\tb\t0-0", s.str());
 }
 
@@ -24,7 +24,7 @@ TEST(LabelTests, PrintHieroLexicalMulti) {
   auto asp = readAlignedSentencePair<false, false>("a\tb c d\t0-0");
   std::ostringstream s;
   PhrasalRule rule{asp};
-  s << LabeledRuleView{ rule, HieroLabeler{} };
+  s << rule;
   EXPECT_EQ("[X]\ta\tb c d\t0-0", s.str());
 }
 
@@ -35,7 +35,7 @@ TEST(LabelTests, PrintHieroUnary) {
   rule.nts.front() = NT(asp.span(), "X");
   auto nt = rule.nts.front().span;
   cutPoints(rule.alignment, nt.src.start, nt.src.end);
-  s << LabeledRuleView{ rule, HieroLabeler{} };
+  s << rule;
   EXPECT_EQ("[X]\t[X,1]\t[X,1]\t", s.str());
 }
 
@@ -49,7 +49,7 @@ TEST(LabelTests, PrintHieroReorder) {
   cutPoints(rule.alignment, nt.src.start, nt.src.end);
   nt = rule.nts[1].span;
   cutPoints(rule.alignment, nt.src.start, nt.src.end);
-  s << LabeledRuleView{ rule, HieroLabeler{} };
+  s << rule;
   EXPECT_EQ("[X]\t[X,1] [X,2]\t[X,2] [X,1]\t", s.str());
 }
 
@@ -60,7 +60,7 @@ TEST(LabelTests, PrintHieroMixed) {
   rule.nts[0] = NT({{0, 1}, {1, 2}}, "X");
   auto nt = rule.nts.front().span;
   cutPoints(rule.alignment, nt.src.start, nt.src.end);
-  s << LabeledRuleView{ rule, HieroLabeler{} };
+  s << rule;
   EXPECT_EQ("[X]\t[X,1] c\tb [X,1]\t", s.str());
 }
 
@@ -74,7 +74,7 @@ TEST(LabelTests, PrintHieroMixed2) {
   cutPoints(rule.alignment, nt.src.start, nt.src.end);
   nt = rule.nts[1].span;
   cutPoints(rule.alignment, nt.src.start, nt.src.end);
-  s << LabeledRuleView{ rule, HieroLabeler{} };
+  s << rule;
   EXPECT_EQ("[X]\t[X,1] [X,2]\t[X,1] d [X,2]\t", s.str());
 }
 

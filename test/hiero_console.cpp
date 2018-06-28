@@ -11,7 +11,7 @@ int main() {
     auto asp = jhu::thrax::readAlignedSentencePair<false, false>(line);
     auto initial = jhu::thrax::minimalConsistentPairs(asp.alignment, 10);
     for (const auto& rule : jhu::thrax::extract(hiero, asp, initial)) {
-      std::cout << jhu::thrax::LabeledRuleView{ rule, hiero } << '\n';
+      std::cout << rule << '\n';
     }
   }
 }

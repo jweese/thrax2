@@ -17,7 +17,7 @@ constexpr size_t kMaxNonterminals = 4;
 
 struct NT {
   SpanPair span{};
-  std::string_view label{};
+  std::string_view label = "X";
 
   NT() = default;
   NT(SpanPair sp) : span(sp) {}
@@ -85,11 +85,6 @@ struct PhrasalRule {
   }
 };
 
-struct LabeledRuleView {
-  const PhrasalRule& rule;
-  const Labeler& labeler;
-};
-
 constexpr int kLhsIndex = 0;
 inline void bracket(std::ostream& out, std::string_view nt, int index) {
   out << '[' << nt;
@@ -100,8 +95,7 @@ inline void bracket(std::ostream& out, std::string_view nt, int index) {
 }
 
 template<bool SourceSide>
-inline void printRhs(std::ostream& out, LabeledRuleView v) {
-  const auto& rule = v.rule;
+inline void printRhs(std::ostream& out, const PhrasalRule& rule) {
   const auto& s = rule.sentence;
   constexpr auto empty = [](auto nt) { return nt.span.empty(); };
   auto nts = rule.nts;
@@ -134,14 +128,13 @@ inline void printRhs(std::ostream& out, LabeledRuleView v) {
   }
 }
 
-inline std::ostream& operator<<(std::ostream& out, LabeledRuleView v) {
-  const auto& [rule, labeler] = v;
+inline std::ostream& operator<<(std::ostream& out, const PhrasalRule& rule) {
   const static std::string_view kSep = "\t";
-  bracket(out, labeler(rule.lhs.span), kLhsIndex);
+  bracket(out, rule.lhs.label, kLhsIndex);
   out << kSep;
-  printRhs<true>(out, v);
+  printRhs<true>(out, rule);
   out << kSep;
-  printRhs<false>(out, v);
+  printRhs<false>(out, rule);
   out << kSep;
   printAlignment(out, rule.terminalAlignment());
   return out;
