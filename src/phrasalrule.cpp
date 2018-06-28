@@ -30,8 +30,7 @@ std::optional<PhrasalRule> addNonterminal(const PhrasalRule& r, const NT& nt) {
 
 using Rules = std::vector<PhrasalRule>;
 
-Rules addAllNonterminals(
-    const Rules& rules, const std::vector<NT>& phrases) {
+Rules addAllNonterminals(const Rules& rules, const std::vector<NT>& phrases) {
   Rules next;
   next.reserve(rules.size());
   for (const auto& rule : rules) {
