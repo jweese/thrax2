@@ -62,6 +62,13 @@ struct PhrasalRule {
     return std::move(alignment);
   }
 
+  Span remainingSource() const {
+    if (nextNT == 0) {
+      return lhs.span.src;
+    }
+    return Span{ nts[nextNT - 1].span.src.end, lhs.span.src.end };
+  }
+
  private:
   template<bool SourceSide>
   PointType terminalIndex(PointType i) const {
