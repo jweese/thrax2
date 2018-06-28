@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <functional>
+#include <numeric>
 #include <ostream>
 #include <string_view>
 #include <vector>
@@ -74,6 +75,18 @@ struct PhrasalRule {
 
   bool lexical() const {
     return nextNT == 0;
+  }
+
+  template<bool SourceSide>
+  int numTokens() const {
+    return std::accumulate(
+        nts.begin(),
+        nts.end(),
+        lhs.span.get<SourceSide>().size(),
+        [](int total, const auto& nt) {
+          auto sz = nt.span.template get<SourceSide>().size();
+          return total - (sz == 0 ? 0 : sz - 1);
+        });
   }
 
  private:
