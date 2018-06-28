@@ -39,7 +39,7 @@ struct PhrasalRule {
         alignment(prev.alignment) {
     cutPoints(alignment, nt.span.src.start, nt.span.src.end);
     nts[nextNT - 1] = std::move(nt);
-  } 
+  }
 
   int ntIndex(const NT& needle) const {
     int i = 1;
@@ -125,8 +125,9 @@ inline void printRhs(std::ostream& out, const PhrasalRule& rule) {
   }
   auto nt = nts.begin();
   auto [start, end] = rule.lhs.span.get<SourceSide>();
+  auto [ntStart, ntEnd] = nt->span.get<SourceSide>();
   for (auto i = start; i < end; i++) {
-    if (nt == it || i < nt->span.template get<SourceSide>().start) {
+    if (nt == it || i < ntStart) {
       if (i != start) {
         out << ' ';
       }
@@ -135,12 +136,18 @@ inline void printRhs(std::ostream& out, const PhrasalRule& rule) {
       } else {
         out << s.tgt[i];
       }
-    } else if (i == nt->span.template get<SourceSide>().end - 1) {
-      if (i != start && nt->span.template get<SourceSide>().start != start) {
+    } else {
+      if (i != start && ntStart != start) {
         out << ' ';
       }
       bracket(out, nt->label, rule.ntIndex(*nt));
+      i = ntEnd - 1;
       nt++;
+      if (nt < it) {
+        auto [s, e] = nt->span.get<SourceSide>();
+        ntStart = s;
+        ntEnd = e;
+      }
     }
   }
 }
