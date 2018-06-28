@@ -35,7 +35,7 @@ Rules addAllNonterminals(
   Rules next;
   next.reserve(rules.size());
   for (const auto& rule : rules) {
-    auto prev = rule.nextNT == 0 ? rule.lhs : rule.nts[rule.nextNT - 1];
+    const auto& prev = rule.nextNT == 0 ? rule.lhs : rule.nts[rule.nextNT - 1];
     auto it = std::lower_bound(
         phrases.begin(), phrases.end(), prev, bySourceStart);
     for (; it < phrases.end(); ++it) {
