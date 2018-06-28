@@ -82,20 +82,11 @@ struct PhrasalRule {
   template<bool SourceSide>
   PointType terminalIndex(PointType i) const {
     auto result = i;
-    if constexpr (SourceSide) {
-      result -= lhs.span.src.start;
-    } else {
-      result -= lhs.span.tgt.start;
-    }
-    for (auto nt : nts) {
-      if constexpr (SourceSide) {
-        if (nt.span.src.start < i) {
-          result -= nt.span.src.size();
-        }
-      } else {
-        if (nt.span.tgt.start < i) {
-          result -= nt.span.tgt.size();
-        }
+    result -= lhs.span.get<SourceSide>().start;
+    for (const auto& nt : nts) {
+      auto [s, e] = nt.span.get<SourceSide>();
+      if (s < i) {
+        result -= (e - s);
       }
     }
     return result;
