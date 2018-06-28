@@ -22,22 +22,17 @@ struct PhrasalRule {
   int nextNT = 0;
   NT lhs{};
   const AlignedSentencePair& sentence;
-  Alignment alignment;
 
   explicit PhrasalRule(const AlignedSentencePair& asp)
       : PhrasalRule(asp, asp.span()) {}
   PhrasalRule(const AlignedSentencePair& asp, NT root)
       : lhs(std::move(root)),
-        sentence(asp),
-        alignment(copyPoints(
-              sentence.alignment, lhs.span.src.start, lhs.span.src.end)) {}
+        sentence(asp) {}
   PhrasalRule(const PhrasalRule& prev, NT nt)
       : nts(prev.nts),
         nextNT(prev.nextNT + 1),
         lhs(prev.lhs),
-        sentence(prev.sentence),
-        alignment(prev.alignment) {
-    cutPoints(alignment, nt.span.src.start, nt.span.src.end);
+        sentence(prev.sentence) {
     nts[nextNT - 1] = std::move(nt);
   }
 

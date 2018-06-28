@@ -34,7 +34,6 @@ TEST(LabelTests, PrintHieroUnary) {
   PhrasalRule rule{asp};
   rule.nts.front() = NT(asp.span(), "X");
   auto nt = rule.nts.front().span;
-  cutPoints(rule.alignment, nt.src.start, nt.src.end);
   s << rule;
   EXPECT_EQ("[X]\t[X,1]\t[X,1]\t", s.str());
 }
@@ -46,9 +45,7 @@ TEST(LabelTests, PrintHieroReorder) {
   rule.nts[0] = NT({{0, 1}, {1, 2}}, "X");
   rule.nts[1] = NT({{1, 2}, {0, 1}}, "X");
   auto nt = rule.nts[0].span;
-  cutPoints(rule.alignment, nt.src.start, nt.src.end);
   nt = rule.nts[1].span;
-  cutPoints(rule.alignment, nt.src.start, nt.src.end);
   s << rule;
   EXPECT_EQ("[X]\t[X,1] [X,2]\t[X,2] [X,1]\t", s.str());
 }
@@ -59,7 +56,6 @@ TEST(LabelTests, PrintHieroMixed) {
   PhrasalRule rule{asp};
   rule.nts[0] = NT({{0, 1}, {1, 2}}, "X");
   auto nt = rule.nts.front().span;
-  cutPoints(rule.alignment, nt.src.start, nt.src.end);
   s << rule;
   EXPECT_EQ("[X]\t[X,1] c\tb [X,1]\t", s.str());
 }
@@ -71,9 +67,7 @@ TEST(LabelTests, PrintHieroMixed2) {
   rule.nts[0] = NT({{0, 1}, {0, 1}}, "X");
   rule.nts[1] = NT({{1, 2}, {2, 3}}, "X");
   auto nt = rule.nts[0].span;
-  cutPoints(rule.alignment, nt.src.start, nt.src.end);
   nt = rule.nts[1].span;
-  cutPoints(rule.alignment, nt.src.start, nt.src.end);
   s << rule;
   EXPECT_EQ("[X]\t[X,1] [X,2]\t[X,1] d [X,2]\t", s.str());
 }
