@@ -71,6 +71,22 @@ struct PhrasalRule {
     return std::move(alignment);
   }
 
+  void printAlignment(std::ostream& out) const {
+    bool firstPointToPrint = true;
+    for (auto point : sentence.alignment) {
+      auto src = terminalIndex<true>(point.src);
+      auto tgt = terminalIndex<false>(point.tgt);
+      if (src >= 0 && tgt >= 0) {
+        if (firstPointToPrint) {
+          firstPointToPrint = false;
+        } else {
+          out << ' ';
+        }
+        out << src << '-' << tgt;
+      }
+    }
+  }
+
   Span remainingSource() const {
     if (nextNT == 0) {
       return lhs.span.src;
@@ -89,13 +105,14 @@ struct PhrasalRule {
     result -= from;
     for (const auto& nt : nts) {
       auto [s, e] = nt.span.get<SourceSide>();
-      if (s < i) {
-        if (e <= i) {
-          result -= (e - s);
-        } else {
-          return -1;
-        }
+      if (i < s) {
+        continue;
       }
+      if (i < e) {
+        // in the NT
+        return -1;
+      }
+      result -= (e - s);
     }
     return result;
   }
@@ -159,7 +176,7 @@ inline std::ostream& operator<<(std::ostream& out, const PhrasalRule& rule) {
   out << kSep;
   printRhs<false>(out, rule);
   out << kSep;
-  printAlignment(out, rule.terminalAlignment());
+  rule.printAlignment(out);
   return out;
 }
 
@@ -171,7 +188,7 @@ inline std::ostream& operator<<(std::ostream& out, PhrasalRule&& rule) {
   out << kSep;
   printRhs<false>(out, rule);
   out << kSep;
-  printAlignment(out, std::move(rule).terminalAlignment());
+  rule.printAlignment(out);
   return out;
 }
 
