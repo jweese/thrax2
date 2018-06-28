@@ -20,6 +20,12 @@ constexpr bool bySourceStart(const NT& a, const NT& b) {
   return a.span.src.start < b.span.src.start;
 }
 
+constexpr bool bySourceSpan(const NT& a, const NT& b) {
+  auto as = a.span.src;
+  auto bs = b.span.src;
+  return as.start < bs.start || (as.start == bs.start && as.end < bs.end);
+}
+
 struct ContainedNTs {
   NT lhs;
   std::vector<const NT*> contained;
