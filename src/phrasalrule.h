@@ -26,11 +26,20 @@ struct PhrasalRule {
 
   explicit PhrasalRule(const AlignedSentencePair& asp)
       : PhrasalRule(asp, asp.span()) {}
-  explicit PhrasalRule(const AlignedSentencePair& asp, NT root)
+  PhrasalRule(const AlignedSentencePair& asp, NT root)
       : lhs(std::move(root)),
         sentence(asp),
         alignment(copyPoints(
               sentence.alignment, lhs.span.src.start, lhs.span.src.end)) {}
+  PhrasalRule(const PhrasalRule& prev, NT nt)
+      : nts(prev.nts),
+        nextNT(prev.nextNT + 1),
+        lhs(prev.lhs),
+        sentence(prev.sentence),
+        alignment(prev.alignment) {
+    cutPoints(alignment, nt.span.src.start, nt.span.src.end);
+    nts[nextNT - 1] = std::move(nt);
+  } 
 
   int ntIndex(const NT& needle) const {
     int i = 1;

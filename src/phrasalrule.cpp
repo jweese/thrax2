@@ -22,10 +22,7 @@ std::optional<PhrasalRule> addNonterminal(const PhrasalRule& r, const NT& nt) {
         begin, it, [&nt](auto i) { return disjoint(i.span, nt.span); })) {
     return {};
   }
-  PhrasalRule result(r);
-  result.nts[result.nextNT++] = nt;
-  cutPoints(result.alignment, nt.span.src.start, nt.span.src.end);
-  return std::move(result);
+  return std::make_optional<PhrasalRule>(r, nt);
 }
 
 using Rules = std::vector<PhrasalRule>;
