@@ -7,7 +7,7 @@ namespace jhu::thrax {
 namespace {
 
 std::optional<PhrasalRule> addNonterminal(const PhrasalRule& r, const NT& nt) {
-  if (!r.lhs.span.contains(nt.span)) {
+  if (r.lhs.span == nt.span || !r.lhs.span.contains(nt.span)) {
     return {};
   }
   auto begin = r.nts.begin();
