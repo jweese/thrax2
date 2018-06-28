@@ -6,8 +6,8 @@ namespace jhu::thrax {
 
 namespace {
 
-std::optional<PhrasalRule> addNonterminal(const PhrasalRule& r, SpanPair nt) {
-  if (!r.lhs.span.contains(nt)) {
+std::optional<PhrasalRule> addNonterminal(const PhrasalRule& r, const NT& nt) {
+  if (!r.lhs.span.contains(nt.span)) {
     return {};
   }
   auto begin = r.nts.begin();
@@ -15,16 +15,16 @@ std::optional<PhrasalRule> addNonterminal(const PhrasalRule& r, SpanPair nt) {
   if (it == r.nts.end()) {
     return {};
   }
-  if (it > begin && nt.src.start < (it - 1)->span.src.start) {
+  if (it > begin && nt.span.src.start < (it - 1)->span.src.start) {
     return {};
   }
   if (!std::all_of(
-        begin, it, [nt](auto i) { return disjoint(i.span, nt); })) {
+        begin, it, [&nt](auto i) { return disjoint(i.span, nt.span); })) {
     return {};
   }
   PhrasalRule result(r);
-  result.nts[result.nextNT++] = NT(nt);
-  cutPoints(result.alignment, nt.src.start, nt.src.end);
+  result.nts[result.nextNT++] = nt;
+  cutPoints(result.alignment, nt.span.src.start, nt.span.src.end);
   return std::move(result);
 }
 
@@ -39,7 +39,7 @@ Rules addAllNonterminals(
     auto it = std::lower_bound(
         phrases.begin(), phrases.end(), prev, bySourceStart);
     for (; it < phrases.end(); ++it) {
-      if (auto r = addNonterminal(rule, it->span); r.has_value()) {
+      if (auto r = addNonterminal(rule, *it); r.has_value()) {
         next.push_back(*std::move(r));
       } else if (it->span.src.start >= rule.lhs.span.src.end) {
         break;
