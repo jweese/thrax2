@@ -23,6 +23,11 @@ struct NT {
   NT(SpanPair sp) : span(sp) {}
   NT(SpanPair sp, std::string_view sv) : span(sp), label(sv) {}
 };
+
+constexpr bool bySourceStart(const NT& a, const NT& b) {
+  return a.span.src.start < b.span.src.start;
+}
+
 using Rhs = std::array<NT, kMaxNonterminals>;
 
 struct PhrasalRule {
