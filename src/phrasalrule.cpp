@@ -38,10 +38,14 @@ Rules addAllNonterminals(const Rules& rules, const std::vector<NT>& phrases) {
     auto it = std::lower_bound(
         phrases.begin(), phrases.end(), rest, bySourceStart);
     for (; it < phrases.end(); it++) {
+      if (it->span.src.start >= rest.src.end) {
+        break;
+      }
+      if (it->span.src.end > rest.src.end) {
+        continue;
+      }
       if (auto r = addNonterminal(rule, *it); r.has_value()) {
         next.push_back(*std::move(r));
-      } else if (it->span.src.start >= rest.src.end) {
-        break;
       }
     }
   }
