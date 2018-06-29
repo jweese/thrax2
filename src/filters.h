@@ -21,4 +21,12 @@ inline bool withinTokenLimit(const PhrasalRule& rule) {
   }
 }
 
+inline bool isAbstract(const PhrasalRule& rule) {
+  auto nts = rule.nextNT;
+  if (nts == 0) {
+    return false;
+  }
+  return rule.numTokens<true>() == nts && rule.numTokens<false>() == nts;
+}
+
 }
