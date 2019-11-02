@@ -1,9 +1,8 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl -wl
 use strict;
 
+$, = " ";
 while (<>) {
-  chomp;
-  s/\)//g;
-  my $line = join(" ", grep { !/\(/ } split);
-  print "$line\n";
+  y/)//d;
+  print grep { !/\(/ } split;
 }
